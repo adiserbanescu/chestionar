@@ -896,7 +896,7 @@
              if (savePdfBtn && typeof html2pdf === 'function') {
                  savePdfBtn.addEventListener('click', () => {
                      const selectedParticipantName = participantSelect.value;
-                     const selectedGroupName = groupSelect.value;
+                     const selectedGroupName = groupSelect.value; // Obținem numele grupei
                      if (!selectedParticipantName || selectedParticipantName === "Selectați Cursantul...") {
                          alert("Vă rugăm selectați un cursant înainte de a salva PDF-ul.");
                          return;
@@ -910,12 +910,11 @@
                      pdfLoader.classList.remove('hidden');
                      savePdfBtn.disabled = true;
 
-                     // Afișăm temporar caseta de sumar
+                     // Afișăm temporar caseta de sumar și ascundem butoanele/selecția
                      const printSummaryBox = document.getElementById('print-summary-box');
-                     if (printSummaryBox) printSummaryBox.style.display = 'block';
-                     // Ascundem butoanele și secțiunea de selecție pentru captură
                      const actionButtons = document.getElementById('action-buttons');
                      const participantSection = document.getElementById('participant-section');
+                     if (printSummaryBox) printSummaryBox.style.display = 'block';
                      if (actionButtons) actionButtons.style.display = 'none';
                      if (participantSection) participantSection.style.display = 'none';
 
@@ -927,20 +926,20 @@
                      const filename = `Evaluare_${safeGroupName}_${safeParticipantName}.pdf`;
 
                      const opt = {
-                         margin:       [10, 10, 10, 10], // Margini mm [sus, stânga, jos, dreapta]
+                         margin:       [15, 18, 15, 18], // Margini mm [sus, stânga, jos, dreapta] - corelate cu padding-ul .page-container
                          filename:     filename,
                          image:        { type: 'jpeg', quality: 0.95 },
-                         html2canvas:  { scale: 2, useCORS: true, logging: false },
+                         html2canvas:  { scale: 2, useCORS: true, logging: false, width: elementToSave.scrollWidth, height: elementToSave.scrollHeight }, // Capturăm tot conținutul
                          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                         pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+                         pagebreak:    { mode: ['css', 'avoid-all'] } // Moduri de pagebreak
                      };
 
                      // Generăm PDF-ul
                      html2pdf().set(opt).from(elementToSave).save().then(() => {
                          console.log('PDF salvat cu succes.');
                          if (printSummaryBox) printSummaryBox.style.display = 'none';
-                         if (actionButtons) actionButtons.style.display = 'flex';
-                         if (participantSection) participantSection.style.display = 'block';
+                         if (actionButtons) actionButtons.style.display = 'flex'; // Reafișăm butoanele
+                         if (participantSection) participantSection.style.display = 'block'; // Reafișăm secțiunea
                          pdfLoader.classList.add('hidden');
                          savePdfBtn.disabled = false;
                      }).catch(err => {
