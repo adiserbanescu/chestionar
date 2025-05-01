@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluare Competente Design Multimedia</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
     <style>
         /* Stiluri generale */
         body {
@@ -17,41 +15,70 @@
         }
         .page-container {
             background-color: white;
-            width: 210mm; /* Lățime A4 */
+            width: 210mm;
+            min-height: 297mm;
             margin: 1rem auto;
-            padding: 15mm 18mm 15mm 18mm; /* Margini A4 standard */
+            padding: 15mm 18mm 15mm 18mm;
             box-shadow: 0 2px 15px rgba(0,0,0,0.15);
             box-sizing: border-box;
             position: relative;
         }
         #main-content { }
-        #header-image-inline, #footer-image-inline {
+        #header-image-inline {
              display: block; width: 100%; max-width: 100%; height: auto;
              margin-left: auto; margin-right: auto;
+             margin-bottom: 10mm;
         }
-        #header-image-inline { margin-bottom: 10mm; }
-        #footer-image-inline { margin-top: 15mm; }
-
-        /* Stiluri pentru caseta de sumar (ascunsă pe ecran) */
-        #print-summary-box {
-            display: none; /* Ascuns pe ecran, afișat de JS înainte de generare PDF */
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 15px;
-            background: #f9f9f9;
-            font-size: 10pt;
+        /* Footer imagine eliminat, folosim text simplu */
+        #page-footer {
+            margin-top: 15mm;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 0.5rem;
         }
-         #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
-         #print-summary-box p { margin-bottom: 4px; }
 
-        /* Eliminăm stilurile @media print */
+        /* Stiluri specifice pentru printare */
+        @media print {
+            body { background-color: white; padding: 0; margin: 0; font-size: 9pt; }
+            .page-container { width: 100%; min-height: 0; height: auto; margin: 0; box-shadow: none; padding: 0; border: none; }
+            #main-content { padding: 15mm 15mm 10mm 15mm; }
+            /* Ascundem elementele non-print */
+            #participant-section, #action-buttons, #dataLoadingStatus, h1#page-title { display: none !important; }
+            /* Afișăm antetul și caseta de sumar la print */
+            #header-image-inline { display: block; margin-bottom: 8mm; }
+            #print-summary-box {
+                display: block !important; /* Forțăm afișarea la print */
+                border: 1px solid #ccc;
+                padding: 10px;
+                margin-bottom: 15px; /* Spațiu sub casetă */
+                background: #f9f9f9;
+                font-size: 10pt;
+                page-break-inside: avoid;
+            }
+            #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
+            #print-summary-box p { margin-bottom: 4px; }
+            #page-footer { display: block; margin-top: 10mm; font-size: 7pt; border-top: 0.5px solid #ccc; padding-top: 3mm; page-break-before: auto; }
+            .question-section { page-break-inside: avoid !important; box-shadow: none; border: none; margin-bottom: 0.5rem; padding: 0.5rem 0; }
+            h2.section-title { margin-bottom: 0.5rem; padding-bottom: 0.2rem; font-size: 10pt; border-bottom: 1px solid #ccc; }
+            .criteria-title { font-size: 9pt; margin-bottom: 0.4rem; }
+            .question { margin-left: 0; margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: none; } /* Fără linie */
+            label { font-size: 8pt; line-height: 1.2; }
+            input[type="radio"] { width: 0.8rem; height: 0.8rem; top: 0.1rem; border-width: 1px; }
+            input[type="radio"]:checked::after { width: 0.35rem; height: 0.35rem; }
+            #results { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ccc; page-break-before: auto; }
+            #results h2 { font-size: 11pt; margin-bottom: 0.4rem; }
+            #sectionScoresDisplay p { font-size: 8.5pt; padding: 0.15rem 0; border: none; background: none; }
+            #results > div.text-center { font-size: 10pt; padding: 0.4rem; margin-bottom: 0.4rem; }
+            #feedbackMessage { font-size: 9pt; padding: 0.5rem; border: none; background: none !important; color: black !important; }
+            a { text-decoration: none; color: inherit; }
+        }
 
         /* Restul stilurilor */
-        input[type="radio"] { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 1.1rem; height: 1.1rem; border: 2px solid #cbd5e1; border-radius: 50%; outline: none; cursor: pointer; margin-right: 0.5rem; position: relative; top: 0.2rem; transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; flex-shrink: 0; }
         input[type="radio"]:hover { border-color: #9ca3af; }
         input[type="radio"]:checked { border-color: #4f46e5; background-color: #4f46e5; }
         input[type="radio"]:checked::after { content: ''; display: block; width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        label { cursor: pointer; display: flex; align-items: center; margin-bottom: 0.25rem; line-height: 1.4; font-size: 0.85rem; color: #374151; }
         select { padding: 0.4rem 2.5rem 0.4rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; width: 100%; box-sizing: border-box; font-size: 0.875rem; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 1.5em 1.5em; transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
         select:disabled { background-color: #f3f4f6; cursor: not-allowed; opacity: 0.7; }
         select:focus { outline: 2px solid transparent; outline-offset: 2px; border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5); }
@@ -70,8 +97,7 @@
         #dataLoadingStatus.error { color: #b91c1c; background-color: #fee2e2; border-color: #fca5a5; }
         .section-title { font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-bottom: 0.8rem; border-bottom: 1px solid #d1d5db; padding-bottom: 0.4rem; }
         .criteria-title { font-size: 0.9rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; padding-top: 0.3rem; }
-        /* Eliminăm linia de sub întrebare */
-        .question { margin-left: 0.3rem; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: none; }
+        .question { margin-left: 0.3rem; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: none; } /* Eliminat border-bottom */
         .indicator-text { font-weight: 500; color: #4b5563; margin-bottom: 0.3rem; display: flex; align-items: flex-start; font-size: 0.8rem; }
         .indicator-prefix { font-weight: 600; margin-right: 0.4rem; color: #1e3a8a; min-width: 3em; }
     </style>
@@ -871,7 +897,7 @@
                     resultsDiv.classList.remove('hidden');
                     last_calculated_scores = { total: overallScore, max_total: overallMaxScore, sections: sectionScoresData, feedback: feedbackText };
 
-                    // Actualizează caseta de sumar (pentru printare ulterioară)
+                    // Actualizează caseta de sumar
                     const printSummaryBox = document.getElementById('print-summary-box');
                     if (printSummaryBox) {
                         document.getElementById('printParticipantName').textContent = "Cursant: " + (participantSelect.value || 'N/A');
@@ -913,6 +939,12 @@
                      const dataLoadingStatus = document.getElementById('dataLoadingStatus');
                      const pageTitle = document.getElementById('page-title');
 
+                     // Stocăm stările inițiale de display
+                     const actionButtonsInitialDisplay = actionButtons ? actionButtons.style.display : '';
+                     const participantSectionInitialDisplay = participantSection ? participantSection.style.display : '';
+                     const dataLoadingStatusInitialDisplay = dataLoadingStatus ? dataLoadingStatus.style.display : '';
+                     const pageTitleInitialDisplay = pageTitle ? pageTitle.style.display : '';
+
                      if (printSummaryBox) printSummaryBox.style.display = 'block';
                      if (actionButtons) actionButtons.style.display = 'none';
                      if (participantSection) participantSection.style.display = 'none';
@@ -922,40 +954,40 @@
 
                      const elementToSave = document.getElementById('page-content');
                      // Construim numele fișierului
-                     // Extragem doar numărul din grupă
                      const groupNumberMatch = selectedGroupName.match(/\d+/);
                      const groupNumber = groupNumberMatch ? groupNumberMatch[0] : 'GRUPA_NECUNOSCUTA';
-                     const safeParticipantName = selectedParticipantName.replace(/[^a-z0-9ăâîșț]/gi, '_'); // Curățăm numele participantului
+                     const safeParticipantName = selectedParticipantName.replace(/[^a-z0-9ăâîșț]/gi, '_');
                      const filename = `Evaluare_${groupNumber}_${safeParticipantName}.pdf`;
 
                      const opt = {
-                         margin:       [10, 10, 10, 10], // Margini mm [sus, stânga, jos, dreapta]
+                         margin:       [15, 18, 15, 18], // Margini mm - corelat cu padding .page-container
                          filename:     filename,
                          image:        { type: 'jpeg', quality: 0.95 },
-                         html2canvas:  { scale: 1.5, useCORS: true, logging: false }, // Scalare optimizată
+                         html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: elementToSave.scrollWidth, windowHeight: elementToSave.scrollHeight },
                          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                         pagebreak:    { mode: ['css', 'avoid-all'] } // Încearcă să evite ruperea elementelor
+                         pagebreak:    { mode: ['css', 'avoid-all'] }
                      };
 
                      // Generăm PDF-ul
                      html2pdf().set(opt).from(elementToSave).save().then(() => {
                          console.log('PDF salvat cu succes.');
-                         // Acțiuni DUPĂ salvare
+                         // Acțiuni DUPĂ salvare - restaurăm vizibilitatea
                          if (printSummaryBox) printSummaryBox.style.display = 'none';
-                         if (actionButtons) actionButtons.style.display = 'flex';
-                         if (participantSection) participantSection.style.display = 'block';
-                         if (dataLoadingStatus && !dataLoadingStatus.classList.contains('error')) dataLoadingStatus.style.display = 'none';
-                         if (pageTitle) pageTitle.style.display = 'block';
+                         if (actionButtons) actionButtons.style.display = actionButtonsInitialDisplay || 'flex'; // Reafișăm butoanele
+                         if (participantSection) participantSection.style.display = participantSectionInitialDisplay || 'block';
+                         if (dataLoadingStatus && !dataLoadingStatus.classList.contains('error')) dataLoadingStatus.style.display = dataLoadingStatusInitialDisplay || 'block';
+                         if (pageTitle) pageTitle.style.display = pageTitleInitialDisplay || 'block';
                          pdfLoader.classList.add('hidden');
                          savePdfBtn.disabled = false;
                      }).catch(err => {
                          console.error("Eroare html2pdf:", err);
                          alert("A apărut o eroare la generarea PDF-ului.");
+                         // Restaurăm vizibilitatea și în caz de eroare
                          if (printSummaryBox) printSummaryBox.style.display = 'none';
-                         if (actionButtons) actionButtons.style.display = 'flex';
-                         if (participantSection) participantSection.style.display = 'block';
-                         if (dataLoadingStatus && !dataLoadingStatus.classList.contains('error')) dataLoadingStatus.style.display = 'none';
-                         if (pageTitle) pageTitle.style.display = 'block';
+                         if (actionButtons) actionButtons.style.display = actionButtonsInitialDisplay || 'flex';
+                         if (participantSection) participantSection.style.display = participantSectionInitialDisplay || 'block';
+                         if (dataLoadingStatus && !dataLoadingStatus.classList.contains('error')) dataLoadingStatus.style.display = dataLoadingStatusInitialDisplay || 'block';
+                         if (pageTitle) pageTitle.style.display = pageTitleInitialDisplay || 'block';
                          pdfLoader.classList.add('hidden');
                          savePdfBtn.disabled = false;
                      });
