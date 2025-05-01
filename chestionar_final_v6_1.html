@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluare Competente Design Multimedia</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <style>
         /* Stiluri generale */
         body {
@@ -15,60 +17,45 @@
         }
         .page-container {
             background-color: white;
-            width: 210mm;
-            min-height: 297mm;
+            width: 210mm; /* Lățime A4 */
             margin: 1rem auto;
-            padding: 15mm 18mm 15mm 18mm;
+            padding: 15mm 18mm 15mm 18mm; /* Margini A4 standard */
             box-shadow: 0 2px 15px rgba(0,0,0,0.15);
             box-sizing: border-box;
             position: relative;
         }
-        #main-content {
-            /* Conținutul principal */
-        }
+        #main-content { }
         #header-image-inline, #footer-image-inline {
-             display: block;
-             width: 100%;
-             max-width: 100%;
-             height: auto;
-             margin-left: auto;
-             margin-right: auto;
+             display: block; width: 100%; max-width: 100%; height: auto;
+             margin-left: auto; margin-right: auto;
         }
-        #header-image-inline {
-             margin-bottom: 10mm; /* Spațiu sub antet */
-        }
-         #footer-image-inline {
-             margin-top: 15mm; /* Spațiu deasupra subsolului */
-        }
+        #header-image-inline { margin-bottom: 10mm; }
+        #footer-image-inline { margin-top: 15mm; }
 
-        /* Stiluri specifice pentru printare */
+        /* Stiluri pentru caseta de sumar (ascunsă pe ecran) */
+        #print-summary-box {
+            display: none; /* Ascuns pe ecran, afișat de JS înainte de generare PDF */
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            font-size: 10pt;
+        }
+         #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
+         #print-summary-box p { margin-bottom: 4px; }
+
+        /* Eliminăm stilurile @media print specifice pt header/footer fix */
         @media print {
-            body { background-color: white; padding: 0; margin: 0; font-size: 9pt; }
-            .page-container { width: 100%; min-height: 0; height: auto; margin: 0; box-shadow: none; padding: 0; border: none; }
-            #main-content { padding: 15mm 15mm 10mm 15mm; }
-            #participant-section, #action-buttons, #dataLoadingStatus, h1#page-title { display: none !important; }
-            #header-image-inline { display: block; margin-bottom: 8mm; }
-            #footer-image-inline { display: block; margin-top: 10mm; page-break-before: auto; }
-            .question-section { page-break-inside: avoid !important; box-shadow: none; border: none; margin-bottom: 0.5rem; padding: 0.5rem 0; }
-            h2.section-title { margin-bottom: 0.5rem; padding-bottom: 0.2rem; font-size: 10pt; border-bottom: 1px solid #ccc; }
-            .criteria-title { font-size: 9pt; margin-bottom: 0.4rem; }
-            /* Eliminăm linia de sub întrebare */
-            .question { margin-left: 0; margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: none; }
-            label { font-size: 8pt; line-height: 1.2; }
-            input[type="radio"] { width: 0.8rem; height: 0.8rem; top: 0.1rem; border-width: 1px; }
-            input[type="radio"]:checked::after { width: 0.35rem; height: 0.35rem; }
-            #results { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ccc; page-break-before: auto; }
-            #results h2 { font-size: 11pt; margin-bottom: 0.4rem; }
-            #sectionScoresDisplay p { font-size: 8.5pt; padding: 0.15rem 0; border: none; background: none; }
-            #results > div.text-center { font-size: 10pt; padding: 0.4rem; margin-bottom: 0.4rem; }
-            #feedbackMessage { font-size: 9pt; padding: 0.5rem; border: none; background: none !important; color: black !important; }
-            a { text-decoration: none; color: inherit; }
+            /* Păstrăm doar stiluri minime dacă sunt necesare */
+            #action-buttons, #participant-section, #dataLoadingStatus { display: none !important; }
         }
 
         /* Restul stilurilor */
+        input[type="radio"] { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 1.1rem; height: 1.1rem; border: 2px solid #cbd5e1; border-radius: 50%; outline: none; cursor: pointer; margin-right: 0.5rem; position: relative; top: 0.2rem; transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; flex-shrink: 0; }
         input[type="radio"]:hover { border-color: #9ca3af; }
         input[type="radio"]:checked { border-color: #4f46e5; background-color: #4f46e5; }
         input[type="radio"]:checked::after { content: ''; display: block; width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        label { cursor: pointer; display: flex; align-items: center; margin-bottom: 0.25rem; line-height: 1.4; font-size: 0.85rem; color: #374151; }
         select { padding: 0.4rem 2.5rem 0.4rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; width: 100%; box-sizing: border-box; font-size: 0.875rem; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 1.5em 1.5em; transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
         select:disabled { background-color: #f3f4f6; cursor: not-allowed; opacity: 0.7; }
         select:focus { outline: 2px solid transparent; outline-offset: 2px; border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5); }
@@ -99,9 +86,9 @@
 <body class="bg-gray-100 p-4 md:p-8">
 
     <div id="page-content" class="page-container">
-        <div id="main-content">
-            <img id="header-image-inline" src="header_color.jpg" alt="Antet">
+        <img id="header-image-inline" src="header_color.jpg" alt="Antet">
 
+        <div id="main-content">
             <h1 id="page-title" class="text-xl md:text-2xl font-bold text-gray-800 mb-8 text-center">Evaluare a Competențelor de Design și Multimedia în contextul portofoliilor premergătoare Resurselor Educaționale Deschise</h1>
 
             <div id="dataLoadingStatus">Se încarcă datele participanților... Vă rugăm așteptați.</div>
@@ -138,6 +125,15 @@
                          <span id="participantEmailDisplay" class="data-display">...</span>
                     </div>
                  </div>
+            </div>
+
+            <div id="print-summary-box" style="display: none;">
+                <h2 style="font-size: 11pt; font-weight: bold; margin-bottom: 3mm;">Informații Evaluare</h2>
+                <p id="printParticipantName" style="font-size: 9pt; margin-bottom: 2mm;"></p>
+                <p id="printGroup" style="font-size: 9pt; margin-bottom: 2mm;"></p>
+                <p id="printEvalDate" style="font-size: 9pt; margin-bottom: 2mm;"></p>
+                <p id="printTotalScore" style="font-size: 9pt; margin-bottom: 5mm;"></p>
+                <hr style="border: none; border-top: 0.5px solid #ccc; margin-bottom: 5mm;">
             </div>
 
             <form id="evaluationForm">
@@ -474,68 +470,66 @@
                                      </div>
                                  </div>
                             </fieldset>
-
-                             <fieldset class="question-group pt-4 border-t border-gray-200">
-                                 <legend class="criteria-title">5.2. Planificarea Feedback-ului Vizual</legend>
-                                 <div class="question" data-question-id="5.5">
-                                     <p class="indicator-text"><span class="indicator-prefix">5.2.1.</span> Portofoliul indică intenția de a oferi feedback vizual la interacțiuni.</p>
-                                     <div class="space-y-1 pl-4">
-                                         <label><input type="radio" name="q5.5" value="3" data-points="3"> Exemplar (Intenție clară și specifică de feedback vizual)</label>
-                                         <label><input type="radio" name="q5.5" value="2" data-points="2"> Competent (Intenție menționată general)</label>
-                                         <label><input type="radio" name="q5.5" value="1" data-points="1"> În Dezvoltare (Nicio mențiune despre feedback vizual)</label>
-                                         <label><input type="radio" name="q5.5" value="0" data-points="0"> Insuficient (Designul exclude posibilitatea feedback-ului)</label>
-                                     </div>
-                                 </div>
-                             </fieldset>
-
-                              <fieldset class="question-group pt-4 border-t border-gray-200">
-                                 <legend class="criteria-title">5.3. Conștientizarea Accesibilității Vizuale</legend>
-                                 <div class="question" data-question-id="5.6">
-                                     <p class="indicator-text"><span class="indicator-prefix">5.3.1.</span> Preocuparea pentru contrastul culorilor este evidentă în design.</p>
-                                     <div class="space-y-1 pl-4">
-                                         <label><input type="radio" name="q5.6" value="3" data-points="3"> Exemplar (Contrast excelent, verificabil, preocupare evidentă)</label>
-                                         <label><input type="radio" name="q5.6" value="2" data-points="2"> Competent (Contrast bun în general, mici probleme potențiale)</label>
-                                         <label><input type="radio" name="q5.6" value="1" data-points="1"> În Dezvoltare (Contrast slab în unele zone, nemenționat)</label>
-                                         <label><input type="radio" name="q5.6" value="0" data-points="0"> Insuficient (Contrast evident insuficient, text ilizibil)</label>
-                                     </div>
-                                 </div>
-                                  <div class="question" data-question-id="5.8">
-                                     <p class="indicator-text"><span class="indicator-prefix">5.3.2.</span> Structura vizuală planificată (ex: heading-uri) susține accesibilitatea.</p>
-                                      <div class="space-y-1 pl-4">
-                                         <label><input type="radio" name="q5.8" value="3" data-points="3"> Exemplar (Structură H1-H6 corectă și logică în mockup)</label>
-                                         <label><input type="radio" name="q5.8" value="2" data-points="2"> Competent (Structură în general corectă, mici erori)</label>
-                                         <label><input type="radio" name="q5.8" value="1" data-points="1"> În Dezvoltare (Structura titlurilor inconsistentă/incorectă)</label>
-                                         <label><input type="radio" name="q5.8" value="0" data-points="0"> Insuficient (Lipsa structurii cu heading-uri)</label>
-                                     </div>
-                                 </div>
-                                  </fieldset>
-                        </div>
-                         <div class="mt-6 text-right font-semibold text-gray-700">
-                            Scor Secțiunea 5: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">21</span> </div>
-                    </div>
-                     <div class="question-section border border-gray-300 p-6 rounded-lg shadow-md" data-section-id="6" data-section-name="Gestionarea Licențelor Media">
-                        <h2 class="section-title">6. Gestionarea Licențelor Media (Planificată)</h2>
-                        <div class="space-y-6">
-                             <fieldset class="question-group">
-                                 <legend class="criteria-title">6.1. Gestionarea Licențelor Media (Planificată)</legend>
-                                 <div class="question" data-question-id="6.1">
-                                     <p class="indicator-text"><span class="indicator-prefix">6.1.1.</span> Demonstrarea înțelegerii nevoii de a folosi media cu licențe corecte (ex: CC, Domeniu Public).</p>
-                                     <div class="space-y-1 pl-4">
-                                         <label><input type="radio" name="q6.1" value="2" data-points="2"> Exemplar/Competent</label> <label><input type="radio" name="q6.1" value="1" data-points="1"> În Dezvoltare</label>
-                                         <label><input type="radio" name="q6.1" value="0" data-points="0"> Insuficient</label>
-                                     </div>
-                                 </div>
-                                 <div class="question" data-question-id="6.2">
-                                     <p class="indicator-text"><span class="indicator-prefix">6.1.2.</span> Includerea unui plan (chiar sumar) pentru atribuirea surselor media.</p>
-                                      <div class="space-y-1 pl-4">
-                                         <label><input type="radio" name="q6.2" value="2" data-points="2"> Exemplar/Competent</label> <label><input type="radio" name="q6.2" value="1" data-points="1"> În Dezvoltare</label>
-                                         <label><input type="radio" name="q6.2" value="0" data-points="0"> Insuficient</label>
-                                     </div>
-                                 </div>
+                            <fieldset class="question-group pt-4 border-t border-gray-200">
+                                <legend class="criteria-title">5.2. Planificarea Feedback-ului Vizual</legend>
+                                <div class="question" data-question-id="5.5">
+                                    <p class="indicator-text"><span class="indicator-prefix">5.2.1.</span> Portofoliul indică intenția de a oferi feedback vizual la interacțiuni.</p>
+                                    <div class="space-y-1 pl-4">
+                                        <label><input type="radio" name="q5.5" value="3" data-points="3"> Exemplar (Intenție clară și specifică de feedback vizual)</label>
+                                        <label><input type="radio" name="q5.5" value="2" data-points="2"> Competent (Intenție menționată general)</label>
+                                        <label><input type="radio" name="q5.5" value="1" data-points="1"> În Dezvoltare (Nicio mențiune despre feedback vizual)</label>
+                                        <label><input type="radio" name="q5.5" value="0" data-points="0"> Insuficient (Designul exclude posibilitatea feedback-ului)</label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="question-group pt-4 border-t border-gray-200">
+                                <legend class="criteria-title">5.3. Conștientizarea Accesibilității Vizuale</legend>
+                                <div class="question" data-question-id="5.6">
+                                    <p class="indicator-text"><span class="indicator-prefix">5.3.1.</span> Preocuparea pentru contrastul culorilor este evidentă în design.</p>
+                                    <div class="space-y-1 pl-4">
+                                        <label><input type="radio" name="q5.6" value="3" data-points="3"> Exemplar (Contrast excelent, verificabil, preocupare evidentă)</label>
+                                        <label><input type="radio" name="q5.6" value="2" data-points="2"> Competent (Contrast bun în general, mici probleme potențiale)</label>
+                                        <label><input type="radio" name="q5.6" value="1" data-points="1"> În Dezvoltare (Contrast slab în unele zone, nemenționat)</label>
+                                        <label><input type="radio" name="q5.6" value="0" data-points="0"> Insuficient (Contrast evident insuficient, text ilizibil)</label>
+                                    </div>
+                                </div>
+                                <div class="question" data-question-id="5.8">
+                                    <p class="indicator-text"><span class="indicator-prefix">5.3.2.</span> Structura vizuală planificată (ex: heading-uri) susține accesibilitatea.</p>
+                                    <div class="space-y-1 pl-4">
+                                        <label><input type="radio" name="q5.8" value="3" data-points="3"> Exemplar (Structură H1-H6 corectă și logică în mockup)</label>
+                                        <label><input type="radio" name="q5.8" value="2" data-points="2"> Competent (Structură în general corectă, mici erori)</label>
+                                        <label><input type="radio" name="q5.8" value="1" data-points="1"> În Dezvoltare (Structura titlurilor inconsistentă/incorectă)</label>
+                                        <label><input type="radio" name="q5.8" value="0" data-points="0"> Insuficient (Lipsa structurii cu heading-uri)</label>
+                                    </div>
+                                </div>
                             </fieldset>
                         </div>
-                         <div class="mt-6 text-right font-semibold text-gray-700">
-                            Scor Secțiunea 6: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">4</span> </div>
+                        <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 5: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">21</span></div>
+                    </div>
+                    <div class="question-section border border-gray-300 p-6 rounded-lg shadow-md" data-section-id="6" data-section-name="Gestionarea Licențelor Media">
+                        <h2 class="section-title">6. Gestionarea Licențelor Media (Planificată)</h2>
+                        <div class="space-y-6">
+                            <fieldset class="question-group">
+                                <legend class="criteria-title">6.1. Gestionarea Licențelor Media (Planificată)</legend>
+                                <div class="question" data-question-id="6.1">
+                                    <p class="indicator-text"><span class="indicator-prefix">6.1.1.</span> Demonstrarea înțelegerii nevoii de a folosi media cu licențe corecte (ex: CC, Domeniu Public).</p>
+                                    <div class="space-y-1 pl-4">
+                                        <label><input type="radio" name="q6.1" value="2" data-points="2"> Exemplar/Competent (Înțelegere clară/Conștientizare a nevoii)</label>
+                                        <label><input type="radio" name="q6.1" value="1" data-points="1"> În Dezvoltare (Menționare superficială)</label>
+                                        <label><input type="radio" name="q6.1" value="0" data-points="0"> Insuficient (Se propune media protejată/Lipsă)</label>
+                                    </div>
+                                </div>
+                                <div class="question" data-question-id="6.2">
+                                    <p class="indicator-text"><span class="indicator-prefix">6.1.2.</span> Includerea unui plan (chiar sumar) pentru atribuirea surselor media.</p>
+                                    <div class="space-y-1 pl-4">
+                                        <label><input type="radio" name="q6.2" value="2" data-points="2"> Exemplar/Competent (Plan clar/sumar pentru atribuire)</label>
+                                        <label><input type="radio" name="q6.2" value="1" data-points="1"> În Dezvoltare (Nicio mențiune despre cum/unde)</label>
+                                        <label><input type="radio" name="q6.2" value="0" data-points="0"> Insuficient (Planul exclude atribuirea/Lipsă)</label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 6: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">4</span></div>
                     </div>
                 </div>
 
@@ -546,8 +540,8 @@
                      <button type="button" id="calculateScoreBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-lg w-full sm:w-auto">
                         Calculează Scorul & Afișează Feedback
                     </button>
-                     <button type="button" id="printPdfBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg w-full sm:w-auto">
-                        Print / Salvează PDF
+                     <button type="button" id="savePdfBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg w-full sm:w-auto">
+                        Salvează PDF <span id="pdfLoader" class="loader hidden"></span>
                     </button>
                 </div>
             </form>
@@ -742,12 +736,14 @@
             const participantSelect = document.getElementById('participantSelect');
             const participantEmailDisplay = document.getElementById('participantEmailDisplay');
             const calculateScoreBtn = document.getElementById('calculateScoreBtn');
-            const printPdfBtn = document.getElementById('printPdfBtn'); // Actualizat ID
+            const savePdfBtn = document.getElementById('savePdfBtn'); // Noul ID pentru buton
             const resetBtn = document.getElementById('resetBtn');
+            const pdfLoader = document.getElementById('pdfLoader');
             const resultsDiv = document.getElementById('results');
             const totalScoreSpan = document.getElementById('totalScore');
             const feedbackMessageDiv = document.getElementById('feedbackMessage');
             const sectionScoresDisplayDiv = document.getElementById('sectionScoresDisplay');
+            const pageContentDiv = document.getElementById('page-content'); // Containerul principal pt PDF
 
             loadAndProcessEvaluationData();
 
@@ -856,6 +852,7 @@
                     const resourcesLink = "ired.spiruharet.ro";
                     const resourcesLinkHtml = `<a href="http://${resourcesLink}" target="_blank" class="underline font-semibold hover:text-indigo-700">${resourcesLink}</a>`;
 
+                    // Feedback detaliat
                     if (percentageScore < 30) {
                         feedbackText = `<strong>Nivel Insuficient (${percentageScore.toFixed(1)}%)</strong>: Competențele de design și multimedia necesită o dezvoltare fundamentală... Explorați resursele și tutorialele introductive disponibile pe ${resourcesLinkHtml} pentru a consolida aceste noțiuni esențiale.`;
                         feedbackClass = 'feedback-insufficient';
@@ -870,12 +867,23 @@
                         feedbackClass = 'feedback-exemplary';
                     }
 
+
                     feedbackMessageDiv.innerHTML = feedbackText;
                     feedbackMessageDiv.className = 'text-left font-medium p-4 rounded-md';
                     feedbackMessageDiv.classList.add(feedbackClass, 'block');
                     feedbackMessageDiv.classList.remove('hidden');
                     resultsDiv.classList.remove('hidden');
                     last_calculated_scores = { total: overallScore, max_total: overallMaxScore, sections: sectionScoresData, feedback: feedbackText };
+
+                    // Actualizează caseta de sumar (pentru printare ulterioară)
+                    const printSummaryBox = document.getElementById('print-summary-box');
+                    if (printSummaryBox) {
+                        document.getElementById('printParticipantName').textContent = "Cursant: " + (participantSelect.value || 'N/A');
+                        document.getElementById('printGroup').textContent = "Grupa: " + (groupSelect.value || 'N/A');
+                        document.getElementById('printEvalDate').textContent = "Data evaluării: " + (new Date()).toLocaleDateString('ro-RO');
+                        document.getElementById('printTotalScore').textContent = "Punctaj total: " + overallScore + " / " + overallMaxScore;
+                    }
+
                     resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 });
             }
@@ -884,48 +892,78 @@
                  resetBtn.addEventListener('click', resetForm);
              }
 
-             // --- Event Listener pentru Buton Print PDF ---
-             if (printPdfBtn) {
-                 printPdfBtn.addEventListener('click', () => {
-                    if (!last_calculated_scores) {
-                         alert("Vă rugăm calculați scorul înainte de a printa/salva ca PDF.");
-                         return;
-                     }
+             // --- Event Listener pentru Buton Salvează PDF ---
+             const savePdfBtn = document.getElementById('savePdfBtn'); // Schimbat ID
+             if (savePdfBtn && typeof html2pdf === 'function') { // Verificăm dacă html2pdf e disponibil
+                 savePdfBtn.addEventListener('click', () => {
                      const selectedParticipantName = participantSelect.value;
+                     const selectedGroupName = groupSelect.value; // Obținem numele grupei
                      if (!selectedParticipantName || selectedParticipantName === "Selectați Cursantul...") {
-                         alert("Vă rugăm selectați un cursant înainte de a printa/salva ca PDF.");
+                         alert("Vă rugăm selectați un cursant înainte de a salva PDF-ul.");
                          return;
                      }
-                     // Adăugăm informațiile selectate într-un div ascuns temporar pentru printare
-                     const printInfoDiv = document.createElement('div');
-                     printInfoDiv.id = 'print-info';
-                     printInfoDiv.style.display = 'none'; // Ascuns normal
-                     printInfoDiv.classList.add('print:block'); // Afișat la printare
-                     printInfoDiv.style.padding = '0 15mm'; // Margini stânga/dreapta pt print
-                     printInfoDiv.style.marginBottom = '5mm'; // Spațiu sub info
-                     printInfoDiv.style.pageBreakAfter = 'avoid';
+                     if (!last_calculated_scores) {
+                         alert("Vă rugăm calculați scorul înainte de a salva PDF-ul.");
+                         return;
+                     }
 
-                     printInfoDiv.innerHTML = `
-                        <h2 style="font-size: 11pt; font-weight: bold; margin-bottom: 5mm;">Informații personale cursant</h2>
-                        <p style="font-size: 9pt; margin-bottom: 2mm;">Luna Evaluării: ${monthSelect.value || 'N/A'}</p>
-                        <p style="font-size: 9pt; margin-bottom: 2mm;">Expert Multimedia: ${expertSelect.value || 'N/A'}</p>
-                        <p style="font-size: 9pt; margin-bottom: 2mm;">Grupă: ${groupSelect.value || 'N/A'}</p>
-                        <p style="font-size: 9pt; margin-bottom: 2mm;">Cursant: ${selectedParticipantName}</p>
-                        <p style="font-size: 9pt; margin-bottom: 5mm;">Email: ${participantEmailDisplay.textContent || 'N/A'}</p>
-                        <hr style="border: none; border-top: 0.5px solid #ccc; margin-bottom: 5mm;">
-                     `;
-                     mainContentDiv.insertBefore(printInfoDiv, mainContentDiv.firstChild);
+                     const pdfLoader = document.getElementById('pdfLoader'); // Referință la loader
+                     pdfLoader.classList.remove('hidden'); // Afișează loader
+                     savePdfBtn.disabled = true; // Dezactivează butonul
 
-                     window.print(); // Deschide dialogul de printare
+                     // Afișăm temporar caseta de sumar
+                     const printSummaryBox = document.getElementById('print-summary-box');
+                     if (printSummaryBox) {
+                         printSummaryBox.style.display = 'block';
+                     }
+                     // Ascundem butoanele și secțiunea de selecție pentru captură
+                     const actionButtons = document.getElementById('action-buttons');
+                     const participantSection = document.getElementById('participant-section');
+                     if (actionButtons) actionButtons.style.display = 'none';
+                     if (participantSection) participantSection.style.display = 'none';
 
-                     // Eliminăm informațiile după ce dialogul de printare s-a închis (sau după un scurt delay)
-                     setTimeout(() => {
-                         const addedInfo = document.getElementById('print-info');
-                         if (addedInfo && addedInfo.parentNode === mainContentDiv) {
-                              mainContentDiv.removeChild(addedInfo);
-                         }
-                     }, 1000); // Mărim delay-ul pentru siguranță
+
+                     const elementToSave = document.getElementById('page-content');
+                     // Construim numele fișierului
+                     const safeGroupName = selectedGroupName.replace(/[^a-z0-9]/gi, '_').toLowerCase(); // Curățăm numele grupei
+                     const safeParticipantName = selectedParticipantName.replace(/[^a-z0-9]/gi, '_').toLowerCase(); // Curățăm numele participantului
+                     const filename = `Evaluare_${safeGroupName}_${safeParticipantName}.pdf`;
+
+                     const opt = {
+                         margin:       [10, 10, 10, 10], // Margini mm [sus, stânga, jos, dreapta]
+                         filename:     filename,
+                         image:        { type: 'jpeg', quality: 0.95 }, // Calitate bună
+                         html2canvas:  { scale: 2, useCORS: true, logging: false }, // Scalare pt rezoluție mai bună
+                         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                         pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] } // Încearcă să evite ruperea elementelor
+                     };
+
+                     // Generăm PDF-ul
+                     html2pdf().set(opt).from(elementToSave).save().then(() => {
+                         // Acțiuni după salvare (dacă e necesar)
+                         console.log('PDF salvat cu succes.');
+                         // Ascundem caseta de sumar înapoi
+                         if (printSummaryBox) printSummaryBox.style.display = 'none';
+                         // Reafișăm butoanele și secțiunea de selecție
+                         if (actionButtons) actionButtons.style.display = 'flex'; // Sau 'block' depinde de layout
+                         if (participantSection) participantSection.style.display = 'block';
+                         pdfLoader.classList.add('hidden'); // Ascunde loader
+                         savePdfBtn.disabled = false; // Reactivează butonul
+                     }).catch(err => {
+                         console.error("Eroare la generarea PDF cu html2pdf:", err);
+                         alert("A apărut o eroare la generarea PDF-ului.");
+                         // Asigură-te că elementele sunt reafișate chiar dacă apare eroare
+                         if (printSummaryBox) printSummaryBox.style.display = 'none';
+                         if (actionButtons) actionButtons.style.display = 'flex';
+                         if (participantSection) participantSection.style.display = 'block';
+                         pdfLoader.classList.add('hidden');
+                         savePdfBtn.disabled = false;
+                     });
                  });
+             } else {
+                 console.warn("html2pdf.js nu este disponibil sau butonul nu a fost găsit. Salvarea PDF este dezactivată.");
+                 const btn = document.getElementById('savePdfBtn');
+                 if(btn) btn.disabled = true;
              }
 
              calculateAndUpdateOverallMaxScore();
