@@ -44,7 +44,11 @@
          #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
          #print-summary-box p { margin-bottom: 4px; }
 
-        /* Eliminăm stilurile @media print - html2pdf preia stilurile normale */
+        /* Eliminăm stilurile @media print specifice pt header/footer fix */
+        @media print {
+            /* Păstrăm doar stiluri minime dacă sunt necesare */
+            #action-buttons, #participant-section, #dataLoadingStatus { display: none !important; }
+        }
 
         /* Restul stilurilor */
         input[type="radio"] { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 1.1rem; height: 1.1rem; border: 2px solid #cbd5e1; border-radius: 50%; outline: none; cursor: pointer; margin-right: 0.5rem; position: relative; top: 0.2rem; transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; flex-shrink: 0; }
@@ -922,17 +926,19 @@
 
                      const elementToSave = document.getElementById('page-content');
                      // Construim numele fișierului
-                     const safeGroupName = selectedGroupName.replace(/[^a-z0-9]/gi, '_').toLowerCase(); // Păstrăm doar cifrele din grupă
+                     // Extragem doar numărul din grupă
+                     const groupNumberMatch = selectedGroupName.match(/\d+/);
+                     const groupNumber = groupNumberMatch ? groupNumberMatch[0] : 'GRUPA_NECUNOSCUTA';
                      const safeParticipantName = selectedParticipantName.replace(/[^a-z0-9ăâîșț]/gi, '_'); // Curățăm numele participantului
-                     const filename = `Evaluare_${safeGroupName}_${safeParticipantName}.pdf`;
+                     const filename = `Evaluare_${groupNumber}_${safeParticipantName}.pdf`;
 
                      const opt = {
                          margin:       [10, 10, 10, 10], // Margini mm [sus, stânga, jos, dreapta]
                          filename:     filename,
                          image:        { type: 'jpeg', quality: 0.95 },
-                         html2canvas:  { scale: 2, useCORS: true, logging: false }, // Eliminăm windowWidth/Height
+                         html2canvas:  { scale: 1.5, useCORS: true, logging: false }, // Scalare mai mică pentru a încăpea mai mult
                          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                         pagebreak:    { mode: ['css', 'avoid-all'] } // Încercăm să evităm ruperea elementelor
+                         pagebreak:    { mode: ['css', 'avoid-all'] } // Încearcă să evite ruperea elementelor
                      };
 
                      // Generăm PDF-ul
