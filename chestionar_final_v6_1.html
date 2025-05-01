@@ -39,6 +39,19 @@
             padding-top: 0.5rem;
         }
 
+        /* Stiluri pentru caseta de sumar (ascunsă pe ecran) */
+        #print-summary-box {
+            /* Ascuns pe ecran implicit cu clasa 'hidden' */
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            font-size: 10pt;
+        }
+         #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
+         #print-summary-box p { margin-bottom: 4px; }
+
+
         /* Stiluri specifice pentru printare */
         @media print {
             body { background-color: white; padding: 0; margin: 0; font-size: 9pt; }
@@ -48,17 +61,7 @@
             #participant-section, #action-buttons, #dataLoadingStatus, h1#page-title { display: none !important; }
             /* Afișăm antetul și caseta de sumar la print */
             #header-image-inline { display: block; margin-bottom: 8mm; }
-            #print-summary-box {
-                display: block !important; /* Forțăm afișarea la print */
-                border: 1px solid #ccc;
-                padding: 10px;
-                margin-bottom: 15px; /* Spațiu sub casetă */
-                background: #f9f9f9;
-                font-size: 10pt;
-                page-break-inside: avoid;
-            }
-            #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
-            #print-summary-box p { margin-bottom: 4px; }
+            #print-summary-box { display: block !important; page-break-after: avoid; } /* Afișăm caseta la print */
             #page-footer { display: block; margin-top: 10mm; font-size: 7pt; border-top: 0.5px solid #ccc; padding-top: 3mm; page-break-before: auto; }
             .question-section { page-break-inside: avoid !important; box-shadow: none; border: none; margin-bottom: 0.5rem; padding: 0.5rem 0; }
             h2.section-title { margin-bottom: 0.5rem; padding-bottom: 0.2rem; font-size: 10pt; border-bottom: 1px solid #ccc; }
@@ -149,14 +152,14 @@
                  </div>
             </div>
 
-            <div id="print-summary-box" style="display: none;">
-                <h2 style="font-size: 11pt; font-weight: bold; margin-bottom: 3mm;">Informații Evaluare</h2>
-                <p id="printParticipantName" style="font-size: 9pt; margin-bottom: 2mm;"></p>
-                <p id="printGroup" style="font-size: 9pt; margin-bottom: 2mm;"></p>
-                <p id="printEvalDate" style="font-size: 9pt; margin-bottom: 2mm;"></p>
-                <p id="printTotalScore" style="font-size: 9pt; margin-bottom: 5mm;"></p>
-                <hr style="border: none; border-top: 0.5px solid #ccc; margin-bottom: 5mm;">
+            <div id="print-summary-box" class="hidden"> <h2 class="text-lg font-semibold mb-2">Informații Evaluare</h2>
+                <p id="printParticipantName"></p>
+                <p id="printGroup"></p>
+                <p id="printEvalDate"></p>
+                <p id="printTotalScore"></p>
+                <hr class="mt-4 mb-2 border-gray-300">
             </div>
+
 
             <form id="evaluationForm">
                 <div class="space-y-6">
@@ -889,7 +892,6 @@
                         feedbackClass = 'feedback-exemplary';
                     }
 
-
                     feedbackMessageDiv.innerHTML = feedbackText;
                     feedbackMessageDiv.className = 'text-left font-medium p-4 rounded-md';
                     feedbackMessageDiv.classList.add(feedbackClass, 'block');
@@ -963,7 +965,7 @@
                          margin:       [15, 18, 15, 18], // Margini mm - corelat cu padding .page-container
                          filename:     filename,
                          image:        { type: 'jpeg', quality: 0.95 },
-                         html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: elementToSave.scrollWidth, windowHeight: elementToSave.scrollHeight },
+                         html2canvas:  { scale: 1.5, useCORS: true, logging: false, scrollX: 0, scrollY: -window.scrollY }, // Ajustat scalarea și scrollY
                          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
                          pagebreak:    { mode: ['css', 'avoid-all'] }
                      };
@@ -973,7 +975,7 @@
                          console.log('PDF salvat cu succes.');
                          // Acțiuni DUPĂ salvare - restaurăm vizibilitatea
                          if (printSummaryBox) printSummaryBox.style.display = 'none';
-                         if (actionButtons) actionButtons.style.display = actionButtonsInitialDisplay || 'flex'; // Reafișăm butoanele
+                         if (actionButtons) actionButtons.style.display = actionButtonsInitialDisplay || 'flex';
                          if (participantSection) participantSection.style.display = participantSectionInitialDisplay || 'block';
                          if (dataLoadingStatus && !dataLoadingStatus.classList.contains('error')) dataLoadingStatus.style.display = dataLoadingStatusInitialDisplay || 'block';
                          if (pageTitle) pageTitle.style.display = pageTitleInitialDisplay || 'block';
