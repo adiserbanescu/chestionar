@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluare Competente Design Multimedia</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         /* Stiluri generale */
         body {
@@ -25,24 +24,12 @@
             position: relative;
         }
         #main-content { }
-        #header-image-inline, #footer-image-inline {
+        #header-image-inline {
              display: block; width: 100%; max-width: 100%; height: auto;
              margin-left: auto; margin-right: auto;
+             margin-bottom: 10mm; /* Spațiu sub antet */
         }
-        #header-image-inline { margin-bottom: 10mm; }
-        #footer-image-inline { margin-top: 15mm; }
-
-        /* Stiluri pentru caseta de sumar (ascunsă pe ecran) */
-        #print-summary-box {
-            display: none; /* Ascuns pe ecran, afișat de JS înainte de generare PDF */
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 15px;
-            background: #f9f9f9;
-            font-size: 10pt;
-        }
-         #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
-         #print-summary-box p { margin-bottom: 4px; }
+        /* Footer imagine eliminat */
 
         /* Eliminăm stilurile @media print specifice pt header/footer fix */
         @media print {
@@ -74,7 +61,6 @@
         #dataLoadingStatus.error { color: #b91c1c; background-color: #fee2e2; border-color: #fca5a5; }
         .section-title { font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-bottom: 0.8rem; border-bottom: 1px solid #d1d5db; padding-bottom: 0.4rem; }
         .criteria-title { font-size: 0.9rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; padding-top: 0.3rem; }
-        /* Eliminăm linia de sub întrebare */
         .question { margin-left: 0.3rem; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: none; }
         .indicator-text { font-weight: 500; color: #4b5563; margin-bottom: 0.3rem; display: flex; align-items: flex-start; font-size: 0.8rem; }
         .indicator-prefix { font-weight: 600; margin-right: 0.4rem; color: #1e3a8a; min-width: 3em; }
@@ -125,15 +111,6 @@
                          <span id="participantEmailDisplay" class="data-display">...</span>
                     </div>
                  </div>
-            </div>
-
-            <div id="print-summary-box" style="display: none;">
-                <h2 style="font-size: 11pt; font-weight: bold; margin-bottom: 3mm;">Informații Evaluare</h2>
-                <p id="printParticipantName" style="font-size: 9pt; margin-bottom: 2mm;"></p>
-                <p id="printGroup" style="font-size: 9pt; margin-bottom: 2mm;"></p>
-                <p id="printEvalDate" style="font-size: 9pt; margin-bottom: 2mm;"></p>
-                <p id="printTotalScore" style="font-size: 9pt; margin-bottom: 5mm;"></p>
-                <hr style="border: none; border-top: 0.5px solid #ccc; margin-bottom: 5mm;">
             </div>
 
             <form id="evaluationForm">
@@ -936,7 +913,7 @@
                          margin:       [10, 10, 10, 10], // Margini mm [sus, stânga, jos, dreapta]
                          filename:     filename,
                          image:        { type: 'jpeg', quality: 0.95 },
-                         html2canvas:  { scale: 1.5, useCORS: true, logging: false }, // Scalare mai mică pentru a încăpea mai mult
+                         html2canvas:  { scale: 1.5, useCORS: true, logging: false }, // Scalare optimizată
                          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
                          pagebreak:    { mode: ['css', 'avoid-all'] } // Încearcă să evite ruperea elementelor
                      };
