@@ -33,7 +33,7 @@
 
         /* Stiluri pentru caseta de sumar (ascunsă pe ecran) */
         #print-summary-box {
-            /* Ascuns pe ecran prin clasa 'hidden' */
+            /* Ascuns pe ecran implicit cu clasa 'hidden' */
             border: 1px solid #ccc;
             padding: 10px;
             margin-bottom: 15px;
@@ -926,14 +926,20 @@
                          document.getElementById('printGroup').textContent = "Grupa: " + (groupSelect.value || 'N/A');
                          document.getElementById('printEvalDate').textContent = "Data evaluării: " + (new Date()).toLocaleDateString('ro-RO');
                          document.getElementById('printTotalScore').textContent = "Punctaj total: " + last_calculated_scores.total + " / " + last_calculated_scores.max_total;
-                         // Nu mai este nevoie să manipulăm display-ul casetei aici, CSS se ocupă
+                         // Afișăm caseta DOAR pentru printare (folosind clasa CSS)
+                         printSummaryBox.classList.remove('hidden'); // Îl facem temporar vizibil pt a fi în DOM la print
                      } else {
                          console.error("Elementul #print-summary-box nu a fost găsit!");
                      }
 
                      window.print(); // Deschide dialogul de printare
 
-                     // Nu mai este necesară ascunderea casetei după print, CSS o gestionează
+                     // Ascundem caseta de sumar după un scurt delay
+                     setTimeout(() => {
+                         if (printSummaryBox) {
+                             printSummaryBox.classList.add('hidden');
+                         }
+                     }, 500);
                  });
              }
 
