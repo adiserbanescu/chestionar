@@ -59,7 +59,9 @@
             h2.section-title { margin-bottom: 0.5rem; padding-bottom: 0.2rem; font-size: 10pt; border-bottom: 1px solid #ccc; }
             .criteria-title { font-size: 9pt; margin-bottom: 0.4rem; }
             .question { margin-left: 0; margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: none; } /* Fără linie */
-            label { font-size: 8pt; line-height: 1.2; }
+            /* Ajustare layout radio pentru print */
+            .radio-options-print { display: flex; flex-direction: column; }
+            label { font-size: 8pt; line-height: 1.2; margin-bottom: 1mm !important; } /* Spațiere redusă între radio */
             input[type="radio"] { width: 0.8rem; height: 0.8rem; top: 0.1rem; border-width: 1px; }
             input[type="radio"]:checked::after { width: 0.35rem; height: 0.35rem; }
             #results { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ccc; page-break-before: auto; }
@@ -95,6 +97,10 @@
         .question { margin-left: 0.3rem; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: none; } /* Eliminat border-bottom */
         .indicator-text { font-weight: 500; color: #4b5563; margin-bottom: 0.3rem; display: flex; align-items: flex-start; font-size: 0.8rem; }
         .indicator-prefix { font-weight: 600; margin-right: 0.4rem; color: #1e3a8a; min-width: 3em; }
+        /* Clasă pentru a aranja opțiunile radio vertical */
+        .radio-options-vertical { display: flex; flex-direction: column; }
+        .radio-options-vertical label { margin-bottom: 0.4rem; /* Spațiu între opțiuni */ }
+
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -152,6 +158,7 @@
                 <hr class="mt-4 mb-2 border-gray-300">
             </div>
 
+
             <form id="evaluationForm">
                 <div class="space-y-6">
                     <div class="question-section border border-gray-300 p-5 rounded-lg shadow-md" data-section-id="1" data-section-name="Concept Vizual și Coerență Stilistică">
@@ -160,7 +167,7 @@
                                  <legend class="criteria-title">1.1. Claritatea și Adecvarea Conceptului Vizual Propus</legend>
                                  <div class="question" data-question-id="1.1">
                                      <p class="indicator-text"><span class="indicator-prefix">1.1.1.</span> Stilul vizual general propus (minimalist, ludic, formal etc.) este clar definit și aparent.</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q1.1" value="3" data-points="3"> Exemplar (Stil clar, evident, justificat)</label>
                                          <label><input type="radio" name="q1.1" value="2" data-points="2"> Competent (Stil în general clar, poate nejustificat)</label>
                                          <label><input type="radio" name="q1.1" value="1" data-points="1"> În Dezvoltare (Stil neclar, amestecat)</label>
@@ -169,7 +176,7 @@
                                  </div>
                                  <div class="question" data-question-id="1.2">
                                      <p class="indicator-text"><span class="indicator-prefix">1.1.2.</span> Stilul vizual propus este adecvat disciplinei, conținutului educațional și publicului țintă.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q1.2" value="3" data-points="3"> Exemplar (Stil foarte potrivit pentru context)</label>
                                          <label><input type="radio" name="q1.2" value="2" data-points="2"> Competent (Stil în general potrivit, mici nepotriviri)</label>
                                          <label><input type="radio" name="q1.2" value="1" data-points="1"> În Dezvoltare (Stil parțial nepotrivit)</label>
@@ -178,7 +185,7 @@
                                  </div>
                                   <div class="question" data-question-id="1.3">
                                      <p class="indicator-text"><span class="indicator-prefix">1.1.3.</span> Justificarea alegerilor stilistice majore (în reflecții/plan) este prezentă și pertinentă.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q1.3" value="3" data-points="3"> Exemplar (Justificare excelentă, detaliată și pertinentă)</label>
                                          <label><input type="radio" name="q1.3" value="2" data-points="2"> Competent (Justificare prezentă, dar sumară/parțial pertinentă)</label>
                                          <label><input type="radio" name="q1.3" value="1" data-points="1"> În Dezvoltare (Justificare vagă sau irelevantă)</label>
@@ -191,7 +198,7 @@
                                  <legend class="criteria-title">1.2. Coerența Vizuală Planificată</legend>
                                  <div class="question" data-question-id="1.4">
                                      <p class="indicator-text"><span class="indicator-prefix">1.2.1.</span> Planificarea utilizării consistente a elementelor (culori, fonturi, grafică) între mockup-uri.</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q1.4" value="3" data-points="3"> Exemplar (Plan detaliat și specific pentru coerență)</label>
                                          <label><input type="radio" name="q1.4" value="2" data-points="2"> Competent (Plan general pentru coerență, detalii lipsă)</label>
                                          <label><input type="radio" name="q1.4" value="1" data-points="1"> În Dezvoltare (Plan vag sau menționare superficială a coerenței)</label>
@@ -200,7 +207,7 @@
                                  </div>
                                  <div class="question" data-question-id="1.5">
                                      <p class="indicator-text"><span class="indicator-prefix">1.2.2.</span> Mockup-urile/artefactele prezintă un aspect unitar, nu un amestec de stiluri.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q1.5" value="3" data-points="3"> Exemplar (Toate mockup-urile respectă același stil vizual definit)</label>
                                          <label><input type="radio" name="q1.5" value="2" data-points="2"> Competent (Majoritatea mockup-urilor coerente, excepții minore)</label>
                                          <label><input type="radio" name="q1.5" value="1" data-points="1"> În Dezvoltare (Mockup-uri cu stiluri diferite, confuzie)</label>
@@ -219,7 +226,7 @@
                                  <legend class="criteria-title">2.1. Aplicarea Principiilor de Compoziție Vizuală</legend>
                                  <div class="question" data-question-id="2.1">
                                      <p class="indicator-text"><span class="indicator-prefix">2.1.1.</span> Intenția de a utiliza <strong>echilibrul</strong> vizual în mockup-uri.</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q2.1" value="3" data-points="3"> Exemplar (Echilibru evident și bine realizat)</label>
                                          <label><input type="radio" name="q2.1" value="2" data-points="2"> Competent (Echilibru prezent, dar perfectibil)</label>
                                          <label><input type="radio" name="q2.1" value="1" data-points="1"> În Dezvoltare (Elemente par aruncate aleatoriu)</label>
@@ -228,7 +235,7 @@
                                  </div>
                                  <div class="question" data-question-id="2.2">
                                      <p class="indicator-text"><span class="indicator-prefix">2.1.2.</span> Intenția de a utiliza <strong>alinierea</strong> pentru ordine și structură.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q2.2" value="3" data-points="3"> Exemplar (Aliniere riguroasă, creează ordine clară)</label>
                                          <label><input type="radio" name="q2.2" value="2" data-points="2"> Competent (Majoritatea elementelor aliniate, mici inconsistențe)</label>
                                          <label><input type="radio" name="q2.2" value="1" data-points="1"> În Dezvoltare (Aliniere inconsistentă, aspect dezordonat)</label>
@@ -237,7 +244,7 @@
                                  </div>
                                  <div class="question" data-question-id="2.3">
                                      <p class="indicator-text"><span class="indicator-prefix">2.1.3.</span> Intenția de a utiliza <strong>proximitatea</strong> pentru gruparea logică.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q2.3" value="3" data-points="3"> Exemplar (Grupare logică și clară a elementelor relaționate)</label>
                                          <label><input type="radio" name="q2.3" value="2" data-points="2"> Competent (Grupare în general logică, unele ambiguități)</label>
                                          <label><input type="radio" name="q2.3" value="1" data-points="1"> În Dezvoltare (Grupare confuză sau ilogică)</label>
@@ -246,7 +253,7 @@
                                  </div>
                                  <div class="question" data-question-id="2.4">
                                      <p class="indicator-text"><span class="indicator-prefix">2.1.4.</span> Intenția de a utiliza <strong>contrastul</strong> pentru evidențiere.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q2.4" value="3" data-points="3"> Exemplar (Contrast folosit eficient pentru ierarhie și focus)</label>
                                          <label><input type="radio" name="q2.4" value="2" data-points="2"> Competent (Contrast prezent, dar ar putea fi mai accentuat/strategic)</label>
                                          <label><input type="radio" name="q2.4" value="1" data-points="1"> În Dezvoltare (Contrast slab sau utilizat ineficient)</label>
@@ -259,7 +266,7 @@
                                  <legend class="criteria-title">2.2. Utilizarea Spațiului Alb (Negativ)</legend>
                                  <div class="question" data-question-id="2.6">
                                      <p class="indicator-text"><span class="indicator-prefix">2.2.1.</span> Mockup-urile/planurile includ suficient spațiu alb pentru lizibilitate.</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q2.6" value="3" data-points="3"> Exemplar (Layout aerisit, spațiu alb generos)</label>
                                          <label><input type="radio" name="q2.6" value="2" data-points="2"> Competent (Spațiu alb suficient în majoritatea zonelor)</label>
                                          <label><input type="radio" name="q2.6" value="1" data-points="1"> În Dezvoltare (Layout aglomerat, spațiu insuficient)</label>
@@ -268,7 +275,7 @@
                                  </div>
                                  <div class="question" data-question-id="2.7">
                                      <p class="indicator-text"><span class="indicator-prefix">2.2.2.</span> Spațiul alb este utilizat strategic pentru a separa și evidenția.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q2.7" value="3" data-points="3"> Exemplar (Utilizare inteligentă a spațiului alb pentru structură și focus)</label>
                                          <label><input type="radio" name="q2.7" value="2" data-points="2"> Competent (Utilizare funcțională a spațiului alb, dar mai puțin strategică)</label>
                                          <label><input type="radio" name="q2.7" value="1" data-points="1"> În Dezvoltare (Utilizarea spațiului alb pare întâmplătoare)</label>
@@ -281,7 +288,7 @@
                                  <legend class="criteria-title">2.3. Ierarhia Vizuală</legend>
                                  <div class="question" data-question-id="2.8">
                                      <p class="indicator-text"><span class="indicator-prefix">2.3.1.</span> Planificarea diferențierii clare (mărime, culoare, stil) titluri/text.</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q2.8" value="3" data-points="3"> Exemplar (Ierarhie textuală foarte clară și consistentă)</label>
                                          <label><input type="radio" name="q2.8" value="2" data-points="2"> Competent (Ierarhie textuală în general clară, mici neclarități)</label>
                                          <label><input type="radio" name="q2.8" value="1" data-points="1"> În Dezvoltare (Diferențiere slabă sau inconsistentă între niveluri)</label>
@@ -290,7 +297,7 @@
                                  </div>
                                   <div class="question" data-question-id="2.9">
                                      <p class="indicator-text"><span class="indicator-prefix">2.3.2.</span> Evidențierea vizuală (planificată) a elementelor cheie (butoane etc.).</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q2.9" value="3" data-points="3"> Exemplar (Elemente cheie foarte proeminente și ușor de identificat)</label>
                                          <label><input type="radio" name="q2.9" value="2" data-points="2"> Competent (Elemente cheie vizibile, dar ar putea fi mai proeminente)</label>
                                          <label><input type="radio" name="q2.9" value="1" data-points="1"> În Dezvoltare (Elemente cheie slab evidențiate)</label>
@@ -309,7 +316,7 @@
                                  <legend class="criteria-title">3.1. Paleta Cromatică</legend>
                                  <div class="question" data-question-id="3.1">
                                      <p class="indicator-text"><span class="indicator-prefix">3.1.1.</span> Paleta de culori propusă este armonioasă și limitată (max 3-4 culori princ.).</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q3.1" value="3" data-points="3"> Exemplar (Paletă coerentă, armonioasă, limitată și bine aleasă)</label>
                                          <label><input type="radio" name="q3.1" value="2" data-points="2"> Competent (Paletă în general armonioasă, poate ușor extinsă)</label>
                                          <label><input type="radio" name="q3.1" value="1" data-points="1"> În Dezvoltare (Prea multe culori sau culori nearmonioase)</label>
@@ -318,7 +325,7 @@
                                  </div>
                                  <div class="question" data-question-id="3.2">
                                      <p class="indicator-text"><span class="indicator-prefix">3.1.2.</span> Culorile alese sunt adecvate temei educaționale și publicului țintă.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q3.2" value="3" data-points="3"> Exemplar (Culori foarte potrivite contextului educațional)</label>
                                          <label><input type="radio" name="q3.2" value="2" data-points="2"> Competent (Culori în general adecvate, mici nepotriviri)</label>
                                          <label><input type="radio" name="q3.2" value="1" data-points="1"> În Dezvoltare (Culori parțial nepotrivite)</label>
@@ -327,7 +334,7 @@
                                  </div>
                                  <div class="question" data-question-id="3.3">
                                      <p class="indicator-text"><span class="indicator-prefix">3.1.3.</span> Contrastul de culoare planificat text-fundal este suficient (&gt;4.5:1).</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q3.3" value="3" data-points="3"> Exemplar (Contrast excelent în toate combinațiile propuse)</label>
                                          <label><input type="radio" name="q3.3" value="2" data-points="2"> Competent (Contrast bun în majoritatea cazurilor, excepții minore)</label>
                                          <label><input type="radio" name="q3.3" value="1" data-points="1"> În Dezvoltare (Contrast slab în unele exemple notabile)</label>
@@ -340,7 +347,7 @@
                                  <legend class="criteria-title">3.2. Selecția și Utilizarea Fonturilor</legend>
                                  <div class="question" data-question-id="3.4">
                                      <p class="indicator-text"><span class="indicator-prefix">3.2.1.</span> Fonturile selectate (max 2-3 familii) sunt lizibile pe ecran.</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q3.4" value="3" data-points="3"> Exemplar (Fonturi foarte lizibile, bine alese pentru digital)</label>
                                          <label><input type="radio" name="q3.4" value="2" data-points="2"> Competent (Fonturi lizibile, dar poate nu optime)</label>
                                          <label><input type="radio" name="q3.4" value="1" data-points="1"> În Dezvoltare (Unul dintre fonturi este greu lizibil)</label>
@@ -349,7 +356,7 @@
                                  </div>
                                  <div class="question" data-question-id="3.5">
                                      <p class="indicator-text"><span class="indicator-prefix">3.2.2.</span> Fonturile sunt utilizate consistent și ierarhic.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q3.5" value="3" data-points="3"> Exemplar (Utilizare foarte consistentă și ierarhică a fonturilor)</label>
                                          <label><input type="radio" name="q3.5" value="2" data-points="2"> Competent (Utilizare în general consistentă, mici excepții)</label>
                                          <label><input type="radio" name="q3.5" value="1" data-points="1"> În Dezvoltare (Utilizare inconsistentă sau ierarhie confuză)</label>
@@ -358,7 +365,7 @@
                                  </div>
                                  <div class="question" data-question-id="3.6">
                                      <p class="indicator-text"><span class="indicator-prefix">3.2.3.</span> Se evită fonturile excesiv de decorative în corpul textului.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q3.6" value="3" data-points="3"> Exemplar (Fonturi decorative folosite minim și adecvat, text lizibil)</label>
                                          <label><input type="radio" name="q3.6" value="2" data-points="2"> Competent (Fonturi decorative folosite limitat, lizibilitate OK)</label>
                                          <label><input type="radio" name="q3.6" value="1" data-points="1"> În Dezvoltare (Fonturi decorative folosite în exces, afectează lizibilitatea)</label>
@@ -378,7 +385,7 @@
                                  <legend class="criteria-title">4.1. Relevanța Pedagogică a Media Planificate</legend>
                                  <div class="question" data-question-id="4.1">
                                      <p class="indicator-text"><span class="indicator-prefix">4.1.1.</span> Justificarea alegerii elementelor multimedia leagă media de obiectivele învățării.</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q4.1" value="3" data-points="3"> Exemplar (Justificare clară și directă a legăturii cu obiectivele)</label>
                                          <label><input type="radio" name="q4.1" value="2" data-points="2"> Competent (Justificare prezentă, dar legătura e mai puțin directă)</label>
                                          <label><input type="radio" name="q4.1" value="1" data-points="1"> În Dezvoltare (Justificare vagă sau legătură slabă cu obiectivele)</label>
@@ -387,7 +394,7 @@
                                  </div>
                                  <div class="question" data-question-id="4.2">
                                      <p class="indicator-text"><span class="indicator-prefix">4.1.2.</span> Media propusă sprijină/clarifică conținutul, nu este pur decorativă.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q4.2" value="3" data-points="3"> Exemplar (Media ilustrează/clarifică perfect conceptele)</label>
                                          <label><input type="radio" name="q4.2" value="2" data-points="2"> Competent (Media sprijină conținutul, dar rolul putea fi mai clar)</label>
                                          <label><input type="radio" name="q4.2" value="1" data-points="1"> În Dezvoltare (Unele elemente media par decorative/de umplutură)</label>
@@ -400,7 +407,7 @@
                                  <legend class="criteria-title">4.2. Calitatea Tehnică și Optimizarea Media (Planificate)</legend>
                                  <div class="question" data-question-id="4.3">
                                      <p class="indicator-text"><span class="indicator-prefix">4.2.1.</span> Există dovezi ale preocupării pentru calitatea tehnică a media.</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q4.3" value="3" data-points="3"> Exemplar (Preocupare explicită și specifică pentru calitate)</label>
                                          <label><input type="radio" name="q4.3" value="2" data-points="2"> Competent (Menționare generală a nevoii de calitate)</label>
                                          <label><input type="radio" name="q4.3" value="1" data-points="1"> În Dezvoltare (Nicio mențiune despre calitatea tehnică)</label>
@@ -409,7 +416,7 @@
                                  </div>
                                  <div class="question" data-question-id="4.4">
                                      <p class="indicator-text"><span class="indicator-prefix">4.2.2.</span> Este menționată intenția de a optimiza media pentru web/mobil.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q4.4" value="3" data-points="3"> Exemplar (Intenție clară și specifică de optimizare)</label>
                                          <label><input type="radio" name="q4.4" value="2" data-points="2"> Competent (Menționare generală a nevoii de optimizare)</label>
                                          <label><input type="radio" name="q4.4" value="1" data-points="1"> În Dezvoltare (Nu se abordează problema optimizării)</label>
@@ -422,7 +429,7 @@
                                  <legend class="criteria-title">4.3. Integrarea Vizuală a Media (Planificată)</legend>
                                  <div class="question" data-question-id="4.5">
                                      <p class="indicator-text"><span class="indicator-prefix">4.3.1.</span> Plasarea planificată a media în layout este logică și estetică.</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q4.5" value="3" data-points="3"> Exemplar (Integrare elegantă, logică și estetică)</label>
                                          <label><input type="radio" name="q4.5" value="2" data-points="2"> Competent (Integrare logică, dar aspectul estetic poate fi îmbunătățit)</label>
                                          <label><input type="radio" name="q4.5" value="1" data-points="1"> În Dezvoltare (Media pare plasată la întâmplare, întrerupe fluxul)</label>
@@ -431,7 +438,7 @@
                                  </div>
                                  <div class="question" data-question-id="4.6">
                                      <p class="indicator-text"><span class="indicator-prefix">4.3.2.</span> Media completează conținutul, fără a crea aglomerare vizuală.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q4.6" value="3" data-points="3"> Exemplar (Media bine dimensionată, completează fără a aglomera)</label>
                                          <label><input type="radio" name="q4.6" value="2" data-points="2"> Competent (Media în general bine integrată, poate ușor aglomerat)</label>
                                          <label><input type="radio" name="q4.6" value="1" data-points="1"> În Dezvoltare (Pagină supraîncărcată cu media)</label>
@@ -451,7 +458,7 @@
                                  <legend class="criteria-title">5.1. Claritatea și Intuitivitatea Interfeței (Conceptuale)</legend>
                                  <div class="question" data-question-id="5.1">
                                      <p class="indicator-text"><span class="indicator-prefix">5.1.1.</span> Elementele de control (butoane, meniuri) propuse în mockup sunt vizibile, ușor de identificat.</p>
-                                     <div class="space-y-1 pl-4">
+                                     <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q5.1" value="3" data-points="3"> Exemplar (Elemente de control foarte clare și distincte)</label>
                                          <label><input type="radio" name="q5.1" value="2" data-points="2"> Competent (Elemente de control clare în majoritate)</label>
                                          <label><input type="radio" name="q5.1" value="1" data-points="1"> În Dezvoltare (Unele elemente greu de distins/identificat)</label>
@@ -460,7 +467,7 @@
                                  </div>
                                  <div class="question" data-question-id="5.2">
                                      <p class="indicator-text"><span class="indicator-prefix">5.1.2.</span> Funcția elementelor interactive pare intuitivă.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q5.2" value="3" data-points="3"> Exemplar (Funcție evidentă și intuitivă pentru toate elementele)</label>
                                          <label><input type="radio" name="q5.2" value="2" data-points="2"> Competent (Funcție în general intuitivă, mici ambiguități)</label>
                                          <label><input type="radio" name="q5.2" value="1" data-points="1"> În Dezvoltare (Funcția unor elemente este neclară/ambiguă)</label>
@@ -469,7 +476,7 @@
                                  </div>
                                  <div class="question" data-question-id="5.3">
                                      <p class="indicator-text"><span class="indicator-prefix">5.1.3.</span> Structura de navigare propusă (în schiță/mockup) este logică și previzibilă.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q5.3" value="3" data-points="3"> Exemplar (Navigare foarte logică, clară și previzibilă)</label>
                                          <label><input type="radio" name="q5.3" value="2" data-points="2"> Competent (Navigare în general logică, mici neclarități posibile)</label>
                                          <label><input type="radio" name="q5.3" value="1" data-points="1"> În Dezvoltare (Structura de navigare este parțial confuză)</label>
@@ -478,7 +485,7 @@
                                  </div>
                                  <div class="question" data-question-id="5.4">
                                      <p class="indicator-text"><span class="indicator-prefix">5.1.4.</span> Consistența elementelor UI este menținută (planificată) între ecrane/pagini.</p>
-                                      <div class="space-y-1 pl-4">
+                                      <div class="radio-options-vertical pl-4">
                                          <label><input type="radio" name="q5.4" value="3" data-points="3"> Exemplar (Consistență excelentă a UI pe toate paginile)</label>
                                          <label><input type="radio" name="q5.4" value="2" data-points="2"> Competent (Consistență bună, excepții minore și justificate)</label>
                                          <label><input type="radio" name="q5.4" value="1" data-points="1"> În Dezvoltare (Inconsistențe notabile în UI între pagini)</label>
@@ -490,7 +497,7 @@
                                 <legend class="criteria-title">5.2. Planificarea Feedback-ului Vizual</legend>
                                 <div class="question" data-question-id="5.5">
                                     <p class="indicator-text"><span class="indicator-prefix">5.2.1.</span> Portofoliul indică intenția de a oferi feedback vizual la interacțiuni.</p>
-                                    <div class="space-y-1 pl-4">
+                                    <div class="radio-options-vertical pl-4">
                                         <label><input type="radio" name="q5.5" value="3" data-points="3"> Exemplar (Intenție clară și specifică de feedback vizual)</label>
                                         <label><input type="radio" name="q5.5" value="2" data-points="2"> Competent (Intenție menționată general)</label>
                                         <label><input type="radio" name="q5.5" value="1" data-points="1"> În Dezvoltare (Nicio mențiune despre feedback vizual)</label>
@@ -502,7 +509,7 @@
                                 <legend class="criteria-title">5.3. Conștientizarea Accesibilității Vizuale</legend>
                                 <div class="question" data-question-id="5.6">
                                     <p class="indicator-text"><span class="indicator-prefix">5.3.1.</span> Preocuparea pentru contrastul culorilor este evidentă în design.</p>
-                                    <div class="space-y-1 pl-4">
+                                    <div class="radio-options-vertical pl-4">
                                         <label><input type="radio" name="q5.6" value="3" data-points="3"> Exemplar (Contrast excelent, verificabil, preocupare evidentă)</label>
                                         <label><input type="radio" name="q5.6" value="2" data-points="2"> Competent (Contrast bun în general, mici probleme potențiale)</label>
                                         <label><input type="radio" name="q5.6" value="1" data-points="1"> În Dezvoltare (Contrast slab în unele zone, nemenționat)</label>
@@ -511,7 +518,7 @@
                                 </div>
                                 <div class="question" data-question-id="5.8">
                                     <p class="indicator-text"><span class="indicator-prefix">5.3.2.</span> Structura vizuală planificată (ex: heading-uri) susține accesibilitatea.</p>
-                                    <div class="space-y-1 pl-4">
+                                    <div class="radio-options-vertical pl-4">
                                         <label><input type="radio" name="q5.8" value="3" data-points="3"> Exemplar (Structură H1-H6 corectă și logică în mockup)</label>
                                         <label><input type="radio" name="q5.8" value="2" data-points="2"> Competent (Structură în general corectă, mici erori)</label>
                                         <label><input type="radio" name="q5.8" value="1" data-points="1"> În Dezvoltare (Structura titlurilor inconsistentă/incorectă)</label>
@@ -529,7 +536,7 @@
                                 <legend class="criteria-title">6.1. Gestionarea Licențelor Media (Planificată)</legend>
                                 <div class="question" data-question-id="6.1">
                                     <p class="indicator-text"><span class="indicator-prefix">6.1.1.</span> Demonstrarea înțelegerii nevoii de a folosi media cu licențe corecte (ex: CC, Domeniu Public).</p>
-                                    <div class="space-y-1 pl-4">
+                                    <div class="radio-options-vertical pl-4">
                                         <label><input type="radio" name="q6.1" value="2" data-points="2"> Exemplar/Competent (Înțelegere clară/Conștientizare a nevoii)</label>
                                         <label><input type="radio" name="q6.1" value="1" data-points="1"> În Dezvoltare (Menționare superficială)</label>
                                         <label><input type="radio" name="q6.1" value="0" data-points="0"> Insuficient (Se propune media protejată/Lipsă)</label>
@@ -537,7 +544,7 @@
                                 </div>
                                 <div class="question" data-question-id="6.2">
                                     <p class="indicator-text"><span class="indicator-prefix">6.1.2.</span> Includerea unui plan (chiar sumar) pentru atribuirea surselor media.</p>
-                                    <div class="space-y-1 pl-4">
+                                    <div class="radio-options-vertical pl-4">
                                         <label><input type="radio" name="q6.2" value="2" data-points="2"> Exemplar/Competent (Plan clar/sumar pentru atribuire)</label>
                                         <label><input type="radio" name="q6.2" value="1" data-points="1"> În Dezvoltare (Nicio mențiune despre cum/unde)</label>
                                         <label><input type="radio" name="q6.2" value="0" data-points="0"> Insuficient (Planul exclude atribuirea/Lipsă)</label>
@@ -933,7 +940,6 @@
                      window.print(); // Deschide dialogul de printare
 
                      // Ascundem caseta de sumar după un scurt delay
-                     // Este posibil ca acest lucru să nu fie perfect sincronizat cu închiderea dialogului de printare
                      setTimeout(() => {
                          if (printSummaryBox) {
                              printSummaryBox.classList.add('hidden');
