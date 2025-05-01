@@ -37,18 +37,14 @@
             display: none; /* Ascuns pe ecran, afișat de JS înainte de generare PDF */
             border: 1px solid #ccc;
             padding: 10px;
-            margin-bottom: 15px; /* Spațiu sub casetă */
+            margin-bottom: 15px;
             background: #f9f9f9;
             font-size: 10pt;
         }
          #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
          #print-summary-box p { margin-bottom: 4px; }
 
-        /* Eliminăm stilurile @media print specifice pt header/footer fix */
-        @media print {
-            /* Păstrăm doar stiluri minime dacă sunt necesare */
-            #action-buttons, #participant-section, #dataLoadingStatus { display: none !important; }
-        }
+        /* Eliminăm stilurile @media print - html2pdf preia stilurile normale */
 
         /* Restul stilurilor */
         input[type="radio"] { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 1.1rem; height: 1.1rem; border: 2px solid #cbd5e1; border-radius: 50%; outline: none; cursor: pointer; margin-right: 0.5rem; position: relative; top: 0.2rem; transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; flex-shrink: 0; }
@@ -703,7 +699,7 @@
         }
 
         function populateMonthDropdown() {
-            const months = Object.keys(processedEvaluationData).sort(); // Sortare luni (poate necesita customizare)
+            const months = Object.keys(processedEvaluationData).sort();
             const monthSelect = document.getElementById('monthSelect');
             if (!monthSelect) return;
             populateDropdown(monthSelect, months, 'Selectați Luna...');
@@ -802,7 +798,6 @@
                     sectionScoresDisplayDiv.innerHTML = '';
                     overallMaxScore = calculateAndUpdateOverallMaxScore();
 
-                    // Stocăm variabilele dacă e prima rulare
                     if (Object.keys(questionnaireVars).length === 0) {
                          document.querySelectorAll('.question-section').forEach(section => {
                             const sectionId = section.dataset.sectionId;
@@ -819,7 +814,6 @@
                         });
                     }
 
-                    // Calculăm scorul
                     document.querySelectorAll('.question-section').forEach(section => {
                         const sectionId = section.dataset.sectionId;
                         const sectionName = section.dataset.sectionName || `Secțiunea ${sectionId}`;
@@ -868,6 +862,7 @@
                         feedbackText = `<strong>Nivel Exemplar (${percentageScore.toFixed(1)}%)</strong>: Demonstrați o înțelegere excelentă și aplicare consecventă și creativă a competențelor... Felicitări! Puteți explora tehnici avansate pe ${resourcesLinkHtml}.`;
                         feedbackClass = 'feedback-exemplary';
                     }
+
 
                     feedbackMessageDiv.innerHTML = feedbackText;
                     feedbackMessageDiv.className = 'text-left font-medium p-4 rounded-md';
@@ -935,9 +930,9 @@
                          margin:       [10, 10, 10, 10], // Margini mm [sus, stânga, jos, dreapta]
                          filename:     filename,
                          image:        { type: 'jpeg', quality: 0.95 },
-                         html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: elementToSave.scrollWidth, windowHeight: elementToSave.scrollHeight }, // Setări pt captură corectă
+                         html2canvas:  { scale: 2, useCORS: true, logging: false }, // Eliminăm windowWidth/Height
                          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                         pagebreak:    { mode: ['css', 'avoid-all'] }
+                         pagebreak:    { mode: ['css', 'avoid-all'] } // Încercăm să evităm ruperea elementelor
                      };
 
                      // Generăm PDF-ul
