@@ -60,7 +60,7 @@
             .criteria-title { font-size: 9pt; margin-bottom: 0.4rem; }
             .question { margin-left: 0; margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: none; } /* Fără linie */
             /* Ajustare layout radio pentru print */
-            .radio-options-print { display: flex; flex-direction: column; }
+            .radio-options-vertical { display: flex; flex-direction: column; }
             label { font-size: 8pt; line-height: 1.2; margin-bottom: 1mm !important; } /* Spațiere redusă între radio */
             input[type="radio"] { width: 0.8rem; height: 0.8rem; top: 0.1rem; border-width: 1px; }
             input[type="radio"]:checked::after { width: 0.35rem; height: 0.35rem; }
@@ -100,7 +100,6 @@
         /* Clasă pentru a aranja opțiunile radio vertical */
         .radio-options-vertical { display: flex; flex-direction: column; }
         .radio-options-vertical label { margin-bottom: 0.4rem; /* Spațiu între opțiuni */ }
-
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -940,6 +939,7 @@
                      window.print(); // Deschide dialogul de printare
 
                      // Ascundem caseta de sumar după un scurt delay
+                     // Este posibil ca acest lucru să nu fie perfect sincronizat cu închiderea dialogului de printare
                      setTimeout(() => {
                          if (printSummaryBox) {
                              printSummaryBox.classList.add('hidden');
