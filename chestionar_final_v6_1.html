@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluare Competente Design Multimedia</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
     <style>
         /* Stiluri generale */
         body {
@@ -17,24 +15,25 @@
         }
         .page-container {
             background-color: white;
-            width: 210mm; /* Lățime A4 */
+            width: 210mm;
+            min-height: 297mm;
             margin: 1rem auto;
-            padding: 15mm 18mm 15mm 18mm; /* Margini A4 standard */
+            padding: 15mm 18mm 15mm 18mm;
             box-shadow: 0 2px 15px rgba(0,0,0,0.15);
             box-sizing: border-box;
             position: relative;
         }
         #main-content { }
-        #header-image-inline, #footer-image-inline {
+        #header-image-inline {
              display: block; width: 100%; max-width: 100%; height: auto;
              margin-left: auto; margin-right: auto;
+             margin-bottom: 10mm;
         }
-        #header-image-inline { margin-bottom: 10mm; }
-        #footer-image-inline { margin-top: 15mm; }
+        /* Footer eliminat */
 
         /* Stiluri pentru caseta de sumar (ascunsă pe ecran) */
         #print-summary-box {
-            display: none; /* Ascuns pe ecran, afișat de JS înainte de generare PDF */
+            /* Ascuns pe ecran prin clasa 'hidden' */
             border: 1px solid #ccc;
             padding: 10px;
             margin-bottom: 15px;
@@ -44,62 +43,37 @@
          #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
          #print-summary-box p { margin-bottom: 4px; }
 
-        /* Stiluri specifice pentru printare ȘI pentru generarea PDF cu html2pdf */
-        @media print, screen {
-            /* Ascundem elementele irelevante în PDF/print */
-            .pdf-hide {
-                 display: none !important;
-            }
-            /* Stiluri aplicate containerului în timpul generării PDF */
-            .page-container.pdf-generating {
-                 width: 190mm !important; /* 210mm lățime A4 - margini mici */
-                 padding: 5mm !important; /* reducere padding pentru spațiu suplimentar */
-                 margin: 0 auto !important;
-                 box-shadow: none !important;
-                 border: none !important;
-            }
-             .pdf-generating .question-section {
-                 padding: 3mm !important;
-                 margin-bottom: 3mm !important;
-             }
-            .pdf-generating .section-title,
-            .pdf-generating .criteria-title,
-            .pdf-generating .indicator-text,
-            .pdf-generating label {
-                font-size: 9pt !important;
-                line-height: 1.2 !important;
-            }
-             .pdf-generating #results, .pdf-generating #feedbackMessage {
-                 font-size: 9pt !important;
-                 padding: 2mm !important;
-             }
-             /* Stiluri specifice pentru caseta de sumar când e vizibilă pentru PDF */
-             #print-summary-box.pdf-visible {
-                 display: block !important;
-                 border: 1px solid #000 !important;
-                 padding: 10px !important;
-                 margin-bottom: 20px !important;
-                 background: #f9f9f9 !important;
-                 font-size: 10pt !important;
-                 page-break-inside: avoid !important;
-             }
-             #print-summary-box.pdf-visible h2 {
-                 margin-bottom: 8px !important;
-                 font-size: 11pt !important;
-                 font-weight: bold !important;
-             }
-             #print-summary-box.pdf-visible p {
-                 margin-bottom: 4px !important;
-             }
+
+        /* Stiluri specifice pentru printare */
+        @media print {
+            body { background-color: white; padding: 0; margin: 0; font-size: 9pt; }
+            .page-container { width: 100%; min-height: 0; height: auto; margin: 0; box-shadow: none; padding: 0; border: none; }
+            #main-content { padding: 15mm 15mm 15mm 15mm; } /* Margini egale la print */
+            /* Ascundem elementele non-print */
+            #participant-section, #action-buttons, #dataLoadingStatus, h1#page-title { display: none !important; }
+            /* Afișăm antetul și caseta de sumar la print */
+            #header-image-inline { display: block !important; margin-bottom: 8mm !important; }
+            #print-summary-box { display: block !important; page-break-after: avoid !important; } /* Afișăm caseta la print */
+            /* Footer eliminat */
+            .question-section { page-break-inside: avoid !important; box-shadow: none; border: none; margin-bottom: 0.5rem; padding: 0.5rem 0; }
+            h2.section-title { margin-bottom: 0.5rem; padding-bottom: 0.2rem; font-size: 10pt; border-bottom: 1px solid #ccc; }
+            .criteria-title { font-size: 9pt; margin-bottom: 0.4rem; }
+            .question { margin-left: 0; margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: none; } /* Fără linie */
+            label { font-size: 8pt; line-height: 1.2; }
+            input[type="radio"] { width: 0.8rem; height: 0.8rem; top: 0.1rem; border-width: 1px; }
+            input[type="radio"]:checked::after { width: 0.35rem; height: 0.35rem; }
+            #results { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ccc; page-break-before: auto; }
+            #results h2 { font-size: 11pt; margin-bottom: 0.4rem; }
+            #sectionScoresDisplay p { font-size: 8.5pt; padding: 0.15rem 0; border: none; background: none; }
+            #results > div.text-center { font-size: 10pt; padding: 0.4rem; margin-bottom: 0.4rem; }
+            #feedbackMessage { font-size: 9pt; padding: 0.5rem; border: none; background: none !important; color: black !important; }
+            a { text-decoration: none; color: inherit; }
         }
 
-
         /* Restul stilurilor */
-        input[type="radio"] { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 1.1rem; height: 1.1rem; border: 2px solid #cbd5e1; border-radius: 50%; outline: none; cursor: pointer; margin-right: 0.5rem; position: relative; top: 0.2rem; transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; flex-shrink: 0; }
         input[type="radio"]:hover { border-color: #9ca3af; }
         input[type="radio"]:checked { border-color: #4f46e5; background-color: #4f46e5; }
         input[type="radio"]:checked::after { content: ''; display: block; width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        label { cursor: pointer; display: flex; align-items: center; margin-bottom: 0.25rem; line-height: 1.4; font-size: 0.85rem; color: #374151; }
         select { padding: 0.4rem 2.5rem 0.4rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; width: 100%; box-sizing: border-box; font-size: 0.875rem; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 1.5em 1.5em; transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
         select:disabled { background-color: #f3f4f6; cursor: not-allowed; opacity: 0.7; }
         select:focus { outline: 2px solid transparent; outline-offset: 2px; border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5); }
@@ -170,14 +144,15 @@
                  </div>
             </div>
 
-            <div id="print-summary-box" style="display: none;">
-                <h2 style="font-size: 11pt; font-weight: bold; margin-bottom: 3mm;">Informații Evaluare</h2>
-                <p id="printParticipantName" style="font-size: 9pt; margin-bottom: 2mm;"></p>
-                <p id="printGroup" style="font-size: 9pt; margin-bottom: 2mm;"></p>
-                <p id="printEvalDate" style="font-size: 9pt; margin-bottom: 2mm;"></p>
-                <p id="printTotalScore" style="font-size: 9pt; margin-bottom: 5mm;"></p>
-                <hr style="border: none; border-top: 0.5px solid #ccc; margin-bottom: 5mm;">
+            <div id="print-summary-box" class="hidden border border-gray-400 rounded-lg p-4 mb-6 bg-gray-50">
+                <h2 class="text-lg font-semibold mb-2">Informații Evaluare</h2>
+                <p id="printParticipantName" class="text-sm"></p>
+                <p id="printGroup" class="text-sm"></p>
+                <p id="printEvalDate" class="text-sm"></p>
+                <p id="printTotalScore" class="text-sm font-medium"></p>
+                <hr class="mt-4 mb-2 border-gray-300">
             </div>
+
 
             <form id="evaluationForm">
                 <div class="space-y-6">
@@ -583,8 +558,8 @@
                      <button type="button" id="calculateScoreBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-lg w-full sm:w-auto">
                         Calculează Scorul & Afișează Feedback
                     </button>
-                     <button type="button" id="savePdfBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg w-full sm:w-auto">
-                        Salvează PDF <span id="pdfLoader" class="loader hidden"></span>
+                     <button type="button" id="printPdfBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg w-full sm:w-auto">
+                        Print / Salvează PDF
                     </button>
                 </div>
             </form>
@@ -599,9 +574,7 @@
                      </div>
             </div>
 
-             <img id="footer-image-inline" src="footer_color.jpg" alt="Subsol">
-
-        </div> </div>
+             </div> </div>
 
         <script>
         // --- Structura globală pentru datele procesate ---
@@ -779,14 +752,13 @@
             const participantSelect = document.getElementById('participantSelect');
             const participantEmailDisplay = document.getElementById('participantEmailDisplay');
             const calculateScoreBtn = document.getElementById('calculateScoreBtn');
-            const savePdfBtn = document.getElementById('savePdfBtn'); // Actualizat ID
+            const printPdfBtn = document.getElementById('printPdfBtn'); // Actualizat ID
             const resetBtn = document.getElementById('resetBtn');
-            const pdfLoader = document.getElementById('pdfLoader');
             const resultsDiv = document.getElementById('results');
             const totalScoreSpan = document.getElementById('totalScore');
             const feedbackMessageDiv = document.getElementById('feedbackMessage');
             const sectionScoresDisplayDiv = document.getElementById('sectionScoresDisplay');
-            const pageContentDiv = document.getElementById('page-content'); // Containerul principal pt PDF
+            const mainContentDiv = document.getElementById('main-content'); // Referință la div-ul principal
 
             loadAndProcessEvaluationData();
 
@@ -935,94 +907,34 @@
                  resetBtn.addEventListener('click', resetForm);
              }
 
-             // --- Event Listener pentru Buton Salvează PDF (folosind html2pdf.js) ---
-             if (savePdfBtn && typeof html2pdf === 'function') {
-                 savePdfBtn.addEventListener('click', () => {
+             // --- Event Listener pentru Buton Print PDF ---
+             if (printPdfBtn) {
+                 printPdfBtn.addEventListener('click', () => {
+                    if (!last_calculated_scores) {
+                         alert("Vă rugăm calculați scorul înainte de a printa/salva ca PDF.");
+                         return;
+                     }
                      const selectedParticipantName = participantSelect.value;
-                     const selectedGroupName = groupSelect.value;
-
                      if (!selectedParticipantName || selectedParticipantName === "Selectați Cursantul...") {
-                         alert("Selectați un cursant înainte de generarea PDF.");
+                         alert("Vă rugăm selectați un cursant înainte de a printa/salva ca PDF.");
                          return;
                      }
-                     if (!last_calculated_scores) {
-                         alert("Calculați scorul înainte de a genera PDF.");
-                         return;
-                     }
-
-                     const pdfLoader = document.getElementById('pdfLoader');
-                     pdfLoader.classList.remove('hidden');
-                     savePdfBtn.disabled = true;
-
-                     // Elementele de ascuns temporar
-                     const actionButtons = document.getElementById('action-buttons');
-                     const participantSection = document.getElementById('participant-section');
-                     const dataLoadingStatus = document.getElementById('dataLoadingStatus');
-                     const pageTitle = document.getElementById('page-title');
+                     // Adăugăm informațiile selectate în caseta de sumar (care e vizibilă doar la print)
                      const printSummaryBox = document.getElementById('print-summary-box');
+                     if (printSummaryBox) {
+                         document.getElementById('printParticipantName').textContent = "Cursant: " + (participantSelect.value || 'N/A');
+                         document.getElementById('printGroup').textContent = "Grupa: " + (groupSelect.value || 'N/A');
+                         document.getElementById('printEvalDate').textContent = "Data evaluării: " + (new Date()).toLocaleDateString('ro-RO');
+                         document.getElementById('printTotalScore').textContent = "Punctaj total: " + last_calculated_scores.total + " / " + last_calculated_scores.max_total;
+                         // Nu mai este nevoie să manipulăm display-ul casetei aici, CSS se ocupă
+                     } else {
+                         console.error("Elementul #print-summary-box nu a fost găsit!");
+                     }
 
-                     // Stocăm stările inițiale de display
-                     const actionButtonsInitialDisplay = actionButtons ? actionButtons.style.display : '';
-                     const participantSectionInitialDisplay = participantSection ? participantSection.style.display : '';
-                     const dataLoadingStatusInitialDisplay = dataLoadingStatus ? dataLoadingStatus.style.display : '';
-                     const pageTitleInitialDisplay = pageTitle ? pageTitle.style.display : '';
+                     window.print(); // Deschide dialogul de printare
 
-                     // Ascundem elementele nedorite și afișăm sumarul
-                     if (printSummaryBox) printSummaryBox.style.display = 'block';
-                     if (actionButtons) actionButtons.style.display = 'none';
-                     if (participantSection) participantSection.style.display = 'none';
-                     if (dataLoadingStatus) dataLoadingStatus.style.display = 'none';
-                     if (pageTitle) pageTitle.style.display = 'none';
-
-                     const elementToSave = document.getElementById('page-content');
-                     const safeGroupName = selectedGroupName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-                     const safeParticipantName = selectedParticipantName.replace(/[^a-z0-9ăâîșț]/gi, '_');
-                     const filename = `Evaluare_${safeGroupName}_${safeParticipantName}.pdf`;
-
-                     const opt = {
-                         margin:       [15, 18, 15, 18], // Margini mm
-                         filename:     filename,
-                         image:        { type: 'jpeg', quality: 0.95 },
-                         html2canvas:  { scale: 1.5, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: elementToSave.scrollWidth, windowHeight: elementToSave.scrollHeight },
-                         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                         pagebreak:    { mode: ['css', 'avoid-all'] }
-                     };
-
-                     // Asigură-te că pagina e derulată sus înainte de captură
-                     window.scrollTo(0, 0);
-
-                     html2pdf().set(opt).from(elementToSave).save().then(() => {
-                         console.log('PDF salvat.');
-                         // Restaurăm vizibilitatea
-                         if (printSummaryBox) printSummaryBox.style.display = 'none';
-                         if (actionButtons) actionButtons.style.display = actionButtonsInitialDisplay || 'flex';
-                         if (participantSection) participantSection.style.display = participantSectionInitialDisplay || 'block';
-                         if (dataLoadingStatus && !dataLoadingStatus.classList.contains('error')) dataLoadingStatus.style.display = dataLoadingStatusInitialDisplay || 'block';
-                         if (pageTitle) pageTitle.style.display = pageTitleInitialDisplay || 'block';
-                         pdfLoader.classList.add('hidden');
-                         savePdfBtn.disabled = false;
-                     }).catch(err => {
-                         console.error("Eroare html2pdf:", err);
-                         alert("Eroare la generarea PDF: " + err.message);
-                         // Restaurăm vizibilitatea și în caz de eroare
-                         if (printSummaryBox) printSummaryBox.style.display = 'none';
-                         if (actionButtons) actionButtons.style.display = actionButtonsInitialDisplay || 'flex';
-                         if (participantSection) participantSection.style.display = participantSectionInitialDisplay || 'block';
-                         if (dataLoadingStatus && !dataLoadingStatus.classList.contains('error')) dataLoadingStatus.style.display = dataLoadingStatusInitialDisplay || 'block';
-                         if (pageTitle) pageTitle.style.display = pageTitleInitialDisplay || 'block';
-                         pdfLoader.classList.add('hidden');
-                         savePdfBtn.disabled = false;
-                     });
+                     // Nu mai este necesară ascunderea casetei după print, CSS o gestionează
                  });
-             } else {
-                 console.warn("html2pdf.js nu este disponibil sau butonul 'savePdfBtn' nu a fost găsit.");
-                 const btn = document.getElementById('savePdfBtn');
-                 if(btn) btn.disabled = true;
-             }
-
-
-             if (resetBtn) {
-                 resetBtn.addEventListener('click', resetForm);
              }
 
              calculateAndUpdateOverallMaxScore();
