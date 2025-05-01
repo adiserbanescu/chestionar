@@ -44,21 +44,20 @@
          #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
          #print-summary-box p { margin-bottom: 4px; }
 
-        /* Stiluri specifice pentru printare (minime, html2pdf preia stilurile normale) */
-        @media print, screen { /* Aplicăm și pe screen pentru consistență cu html2pdf */
-             /* Ascundem elementele irelevante în PDF */
-            #action-buttons, #participant-section, #dataLoadingStatus {
+        /* Stiluri specifice pentru printare ȘI pentru generarea PDF cu html2pdf */
+        @media print, screen {
+            /* Ascundem elementele irelevante în PDF/print */
+            .pdf-hide {
                  display: none !important;
             }
-             /* Stiluri pentru a condensa conținutul în PDF */
-            .page-container.pdf-generating { /* Clasă adăugată temporar */
-                 padding: 5mm !important; /* Padding redus în PDF */
+            /* Stiluri aplicate containerului în timpul generării PDF */
+            .page-container.pdf-generating {
+                 width: 190mm !important; /* 210mm lățime A4 - margini mici */
+                 padding: 5mm !important; /* reducere padding pentru spațiu suplimentar */
+                 margin: 0 auto !important;
                  box-shadow: none !important;
                  border: none !important;
             }
-             .pdf-generating #main-content {
-                 padding-top: 0 !important; /* Eliminăm padding-ul extra */
-             }
              .pdf-generating .question-section {
                  padding: 3mm !important;
                  margin-bottom: 3mm !important;
@@ -936,17 +935,18 @@
                  resetBtn.addEventListener('click', resetForm);
              }
 
-             // --- Event Listener pentru Buton Salvează PDF ---
+             // --- Event Listener pentru Buton Salvează PDF (folosind html2pdf.js) ---
              if (savePdfBtn && typeof html2pdf === 'function') {
                  savePdfBtn.addEventListener('click', () => {
                      const selectedParticipantName = participantSelect.value;
                      const selectedGroupName = groupSelect.value;
+
                      if (!selectedParticipantName || selectedParticipantName === "Selectați Cursantul...") {
-                         alert("Vă rugăm selectați un cursant înainte de a salva PDF-ul.");
+                         alert("Selectați un cursant înainte de generarea PDF.");
                          return;
                      }
                      if (!last_calculated_scores) {
-                         alert("Vă rugăm calculați scorul înainte de a salva PDF-ul.");
+                         alert("Calculați scorul înainte de a genera PDF.");
                          return;
                      }
 
@@ -954,12 +954,12 @@
                      pdfLoader.classList.remove('hidden');
                      savePdfBtn.disabled = true;
 
-                     // Afișăm temporar caseta de sumar și ascundem elementele nedorite
-                     const printSummaryBox = document.getElementById('print-summary-box');
+                     // Elementele de ascuns temporar
                      const actionButtons = document.getElementById('action-buttons');
                      const participantSection = document.getElementById('participant-section');
                      const dataLoadingStatus = document.getElementById('dataLoadingStatus');
                      const pageTitle = document.getElementById('page-title');
+                     const printSummaryBox = document.getElementById('print-summary-box');
 
                      // Stocăm stările inițiale de display
                      const actionButtonsInitialDisplay = actionButtons ? actionButtons.style.display : '';
@@ -967,33 +967,33 @@
                      const dataLoadingStatusInitialDisplay = dataLoadingStatus ? dataLoadingStatus.style.display : '';
                      const pageTitleInitialDisplay = pageTitle ? pageTitle.style.display : '';
 
+                     // Ascundem elementele nedorite și afișăm sumarul
                      if (printSummaryBox) printSummaryBox.style.display = 'block';
                      if (actionButtons) actionButtons.style.display = 'none';
                      if (participantSection) participantSection.style.display = 'none';
                      if (dataLoadingStatus) dataLoadingStatus.style.display = 'none';
                      if (pageTitle) pageTitle.style.display = 'none';
 
-
                      const elementToSave = document.getElementById('page-content');
-                     // Construim numele fișierului
-                     const groupNumberMatch = selectedGroupName.match(/\d+/);
-                     const groupNumber = groupNumberMatch ? groupNumberMatch[0] : 'GRUPA_NECUNOSCUTA';
+                     const safeGroupName = selectedGroupName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
                      const safeParticipantName = selectedParticipantName.replace(/[^a-z0-9ăâîșț]/gi, '_');
-                     const filename = `Evaluare_${groupNumber}_${safeParticipantName}.pdf`;
+                     const filename = `Evaluare_${safeGroupName}_${safeParticipantName}.pdf`;
 
                      const opt = {
-                         margin:       [15, 18, 15, 18], // Margini mm - corelat cu padding .page-container
+                         margin:       [15, 18, 15, 18], // Margini mm
                          filename:     filename,
                          image:        { type: 'jpeg', quality: 0.95 },
-                         html2canvas:  { scale: 1.5, useCORS: true, logging: false, scrollX: 0, scrollY: -window.scrollY }, // Ajustat scalarea și scrollY
+                         html2canvas:  { scale: 1.5, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: elementToSave.scrollWidth, windowHeight: elementToSave.scrollHeight },
                          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
                          pagebreak:    { mode: ['css', 'avoid-all'] }
                      };
 
-                     // Generăm PDF-ul
+                     // Asigură-te că pagina e derulată sus înainte de captură
+                     window.scrollTo(0, 0);
+
                      html2pdf().set(opt).from(elementToSave).save().then(() => {
-                         console.log('PDF salvat cu succes.');
-                         // Acțiuni DUPĂ salvare - restaurăm vizibilitatea
+                         console.log('PDF salvat.');
+                         // Restaurăm vizibilitatea
                          if (printSummaryBox) printSummaryBox.style.display = 'none';
                          if (actionButtons) actionButtons.style.display = actionButtonsInitialDisplay || 'flex';
                          if (participantSection) participantSection.style.display = participantSectionInitialDisplay || 'block';
@@ -1003,7 +1003,7 @@
                          savePdfBtn.disabled = false;
                      }).catch(err => {
                          console.error("Eroare html2pdf:", err);
-                         alert("A apărut o eroare la generarea PDF-ului.");
+                         alert("Eroare la generarea PDF: " + err.message);
                          // Restaurăm vizibilitatea și în caz de eroare
                          if (printSummaryBox) printSummaryBox.style.display = 'none';
                          if (actionButtons) actionButtons.style.display = actionButtonsInitialDisplay || 'flex';
@@ -1015,9 +1015,14 @@
                      });
                  });
              } else {
-                 console.warn("html2pdf.js nu este disponibil sau butonul nu a fost găsit.");
+                 console.warn("html2pdf.js nu este disponibil sau butonul 'savePdfBtn' nu a fost găsit.");
                  const btn = document.getElementById('savePdfBtn');
                  if(btn) btn.disabled = true;
+             }
+
+
+             if (resetBtn) {
+                 resetBtn.addEventListener('click', resetForm);
              }
 
              calculateAndUpdateOverallMaxScore();
