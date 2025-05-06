@@ -6,25 +6,21 @@
     <title>Evaluare Competente Design Multimedia</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* Stilurile HTML rămân în mare parte la fel pentru interfața web */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #e5e7eb;
             padding-top: 1rem;
             padding-bottom: 2rem;
         }
-        .page-container { /* Containerul vizual A4 pentru ecran */
+        .page-container {
             background-color: white;
             width: 210mm;
-            /* min-height: 297mm; */ /* Vom lăsa conținutul să determine înălțimea */
             margin: 1rem auto;
-            padding: 15mm 18mm 10mm 18mm; /* Ajustat padding-bottom */
+            padding: 15mm 18mm 10mm 18mm;
             box-shadow: 0 2px 15px rgba(0,0,0,0.15);
             box-sizing: border-box;
-        }
-        #page-content-for-capture { /* Acest element va fi capturat */
-            background-color: white; /* Asigură fundal alb pentru captură */
         }
         #header-image-inline {
              display: block; width: 100%; max-width: 100%; height: auto;
@@ -32,20 +28,20 @@
              margin-bottom: 10mm;
         }
         #page-footer-text {
-            margin-top: 10mm; /* Redus spațiul dacă este la sfârșitul conținutului capturat */
+            margin-top: 10mm;
             text-align: center;
             font-size: 0.7rem;
             color: #6b7280;
             border-top: 0.5px solid #ccc;
             padding-top: 5mm;
         }
-        #print-summary-box {
+        #print-summary-box { /* Acum folosit doar pentru date, nu pentru captura vizuala */
             border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; background: #f9f9f9; font-size: 10pt;
         }
         #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
         #print-summary-box p { margin-bottom: 4px; }
 
-        /* Stiluri Tailwind și custom (majoritatea rămân neschimbate) */
+        /* ... restul stilurilor tale ... */
         input[type="radio"]:hover { border-color: #9ca3af; }
         input[type="radio"]:checked { border-color: #4f46e5; background-color: #4f46e5; }
         input[type="radio"]:checked::after { content: ''; display: block; width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
@@ -72,25 +68,19 @@
         .indicator-prefix { font-weight: 600; margin-right: 0.4rem; color: #1e3a8a; min-width: 3em; }
         .radio-options-vertical { display: flex; flex-direction: column; }
         .radio-options-vertical label { margin-bottom: 0.4rem; }
-
-        .pdf-capture-helper { /* Clasă pentru a ascunde elemente DOAR în timpul capturii PDF */
-            display: none !important;
-        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-100 p-4 md:p-8">
-
     <div class="page-container">
         <div id="page-content-for-capture">
             <img id="header-image-inline" src="header_color.jpg" alt="Antet">
-
             <div id="main-content">
-                <h1 id="page-title" class="text-xl md:text-2xl font-bold text-gray-800 mb-8 text-center">Evaluare a Competențelor de Design și Multimedia în contextul portofoliilor premergătoare Resurselor Educaționale Deschise</h1>
-                <div id="dataLoadingStatus">Se încarcă datele participanților... Vă rugăm așteptați.</div>
-                <div id="participant-section" class="mb-6 border border-gray-300 rounded-lg shadow-sm overflow-hidden p-5 bg-gray-100">
+                <h1 id="page-title" class="text-xl md:text-2xl font-bold text-gray-800 mb-8 text-center">Evaluare a Competențelor de Design și Multimedia...</h1>
+                <div id="dataLoadingStatus">Se încarcă datele...</div>
+                <div id="participant-section" class="mb-6 ...">
                     <h2 id="participant-section-header" class="text-lg font-semibold text-gray-700 mb-4">Informații personale cursant</h2>
                      <div class="participant-grid">
                          <div class="space-y-1">
@@ -123,14 +113,11 @@
                          </div>
                      </div>
                 </div>
-
-                <div id="print-summary-box" class="hidden">
-                    <h2 class="text-lg font-semibold mb-2">Informații Evaluare</h2>
+                 <div id="print-summary-box" class="hidden"> <h2 class="text-lg font-semibold mb-2">Informații Evaluare</h2>
                     <p id="printParticipantName" class="text-sm"></p>
                     <p id="printGroup" class="text-sm"></p>
                     <p id="printEvalDate" class="text-sm"></p>
                     <p id="printTotalScore" class="text-sm font-medium"></p>
-                    <hr class="mt-4 mb-2 border-gray-300">
                 </div>
 
                 <form id="evaluationForm">
@@ -249,30 +236,34 @@
                             <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 6: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">4</span></div>
                         </div>
                     </div>
-
                     <div id="action-buttons" class="mt-10 pt-6 border-t border-gray-300 flex flex-col sm:flex-row justify-center items-center gap-4">
-                         <button type="button" id="resetBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 text-lg w-full sm:w-auto">Resetare Formular</button>
-                         <button type="button" id="calculateScoreBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-lg w-full sm:w-auto">Calculează Scorul & Afișează Feedback</button>
-                         <button type="button" id="printPdfBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg w-full sm:w-auto">Generează PDF Direct</button>
+                        <button type="button" id="resetBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 text-lg w-full sm:w-auto">Resetare Formular</button>
+                        <button type="button" id="calculateScoreBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-lg w-full sm:w-auto">Calculează Scorul & Afișează Feedback</button>
+                        <button type="button" id="printPdfBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg w-full sm:w-auto">Generează PDF Tabelar</button>
                     </div>
                 </form>
-
                 <div id="results" class="mt-10 pt-8 border-t-2 border-gray-300 hidden">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Rezultate Evaluare</h2>
                     <div id="sectionScoresDisplay" class="mb-6 space-y-3"></div>
                     <div class="text-center text-2xl font-bold text-gray-800 mb-6 bg-indigo-50 p-4 rounded-lg">Scor Total General: <span id="totalScore" class="text-indigo-700">0</span> / <span id="maxTotalScore">100</span></div>
                     <div id="feedbackMessage" class="text-left font-medium hidden"></div>
                 </div>
-            </div> <footer id="page-footer-text">
+            </div>
+            <footer id="page-footer-text">
                  PNRR. Finanțat de Uniunea Europeană - UrmătoareaGenerațieUE | Titlu proiect: DigiFormPEDAGOG (PNRR ID_20) | Beneficiar proiect: Universitatea Spiru Haret | Conținutul acestui material nu reprezintă în mod obligatoriu poziția oficială a Uniunii Europene sau a Guvernului României.
             </footer>
-        </div> </div> <script>
-    // --- Structura globală și funcțiile utilitare (calculateSectionMaxScore, etc.) rămân la fel ---
+        </div>
+    </div>
+
+    <script>
+    // ... (codul existent pentru processedEvaluationData, questionnaireVars, last_calculated_scores, funcțiile utilitare de calcul, populare dropdowns, loadAndProcessEvaluationData, resetForm, listener pentru calculateScoreBtn, etc. rămâne aici)
+    // --- Structura globală pentru datele procesate ---
     let processedEvaluationData = {};
-    const questionnaireVars = {};
+    const questionnaireVars = {}; // Va fi populat la primul calcul de scor
     let last_calculated_scores = null;
 
-    function calculateSectionMaxScore(sectionElement) { /* ... implementare existentă ... */ 
+    // --- Funcții Utilitare ---
+    function calculateSectionMaxScore(sectionElement) {
         let sectionMax = 0;
         if (!sectionElement) return 0;
         sectionElement.querySelectorAll('.question').forEach(question => {
@@ -285,12 +276,14 @@
         });
         return sectionMax;
     }
-    function updateDisplayedSectionMaxScore(sectionElement, maxScore) { /* ... implementare existentă ... */ 
+
+    function updateDisplayedSectionMaxScore(sectionElement, maxScore) {
         if (!sectionElement) return;
         const maxScoreSpan = sectionElement.querySelector('.section-max-score');
         if (maxScoreSpan) maxScoreSpan.textContent = maxScore;
     }
-    function calculateAndUpdateOverallMaxScore() { /* ... implementare existentă ... */ 
+
+    function calculateAndUpdateOverallMaxScore() {
         let overallMax = 0;
         document.querySelectorAll('.question-section').forEach(section => {
             const sectionMax = calculateSectionMaxScore(section);
@@ -302,7 +295,8 @@
         if (maxTotalScoreSpan) maxTotalScoreSpan.textContent = finalMaxScore;
         return finalMaxScore;
     }
-    function populateDropdown(selectElement, optionsArray, defaultOptionText) { /* ... implementare existentă ... */ 
+
+    function populateDropdown(selectElement, optionsArray, defaultOptionText) {
         if (!selectElement) return;
         selectElement.innerHTML = `<option value="">${defaultOptionText}</option>`;
         if (selectElement.id === 'expertSelect' || selectElement.id === 'participantSelect') {
@@ -335,7 +329,8 @@
         });
          selectElement.disabled = false;
     }
-    function resetAndDisableDropdown(selectElement, defaultOptionText) { /* ... implementare existentă ... */ 
+
+     function resetAndDisableDropdown(selectElement, defaultOptionText) {
          if (!selectElement) return;
          selectElement.innerHTML = `<option value="">${defaultOptionText}</option>`;
          selectElement.disabled = true;
@@ -349,8 +344,10 @@
              const emailDisplay = document.getElementById('participantEmailDisplay');
              if (emailDisplay) emailDisplay.textContent = '...';
          }
-    }
-    async function loadAndProcessEvaluationData() { /* ... implementare existentă ... */ 
+     }
+
+    // --- Funcție pentru încărcarea și procesarea datelor JSON ---
+    async function loadAndProcessEvaluationData() {
         const jsonFilePath = 'Atasament 2_bis.json'; // Asigură-te că acest fișier este în aceeași locație sau ajustează calea
         const monthSelect = document.getElementById('monthSelect');
         const expertSelect = document.getElementById('expertSelect');
@@ -408,7 +405,8 @@
             resetAndDisableDropdown(participantSelect, '...');
         }
     }
-    function populateMonthDropdown() { /* ... implementare existentă ... */ 
+
+    function populateMonthDropdown() {
         const months = Object.keys(processedEvaluationData).sort(); // Sortează lunile alfabetic
         const monthSelect = document.getElementById('monthSelect');
         if (!monthSelect) return;
@@ -420,7 +418,9 @@
             monthSelect.innerHTML = `<option value="">Nu s-au găsit date</option>`;
         }
     }
-    function resetForm() { /* ... implementare existentă ... */ 
+
+    // --- Funcție pentru resetarea formularului ---
+    function resetForm() {
         const form = document.getElementById('evaluationForm');
         form.reset(); // Resetează inputurile din formular
         document.querySelectorAll('.section-score').forEach(span => span.textContent = '0'); // Resetează scorurile secțiunilor afișate
@@ -449,16 +449,16 @@
         const participantSelect = document.getElementById('participantSelect');
         const participantEmailDisplay = document.getElementById('participantEmailDisplay');
         const calculateScoreBtn = document.getElementById('calculateScoreBtn');
-        const printPdfBtn = document.getElementById('printPdfBtn'); 
+        const printPdfBtn = document.getElementById('printPdfBtn');
         const resetBtn = document.getElementById('resetBtn');
         const resultsDiv = document.getElementById('results');
         const totalScoreSpan = document.getElementById('totalScore');
         const feedbackMessageDiv = document.getElementById('feedbackMessage');
         const sectionScoresDisplayDiv = document.getElementById('sectionScoresDisplay');
-        
+
         loadAndProcessEvaluationData();
 
-        monthSelect.addEventListener('change', () => { 
+        monthSelect.addEventListener('change', () => {
             const selectedMonth = monthSelect.value;
             resetAndDisableDropdown(expertSelect, 'Selectați Expertul...');
             resetAndDisableDropdown(groupSelect, 'Selectați Grupa...');
@@ -469,7 +469,8 @@
                 else resetAndDisableDropdown(expertSelect, 'Niciun expert...');
             }
         });
-        expertSelect.addEventListener('change', () => { 
+
+        expertSelect.addEventListener('change', () => {
             const selectedMonth = monthSelect.value;
             const selectedExpert = expertSelect.value;
             resetAndDisableDropdown(groupSelect, 'Selectați Grupa...');
@@ -484,7 +485,8 @@
                 else resetAndDisableDropdown(groupSelect, 'Nicio grupă...');
             }
         });
-        groupSelect.addEventListener('change', () => { 
+
+         groupSelect.addEventListener('change', () => {
             const selectedMonth = monthSelect.value;
             const selectedExpert = expertSelect.value;
             const selectedGroup = groupSelect.value;
@@ -495,222 +497,356 @@
                 else resetAndDisableDropdown(participantSelect, 'Niciun cursant...');
             }
         });
-        participantSelect.addEventListener('change', () => { 
+
+        participantSelect.addEventListener('change', () => {
             const selectedOption = participantSelect.options[participantSelect.selectedIndex];
             participantEmailDisplay.textContent = selectedOption.dataset.email || '...';
         });
 
-        if (calculateScoreBtn) { calculateScoreBtn.addEventListener('click', () => { 
-            let overallScore = 0;
-            let sectionScoresData = {};
-            let allQuestionsAnswered = true;
-            sectionScoresDisplayDiv.innerHTML = '';
-            overallMaxScore = calculateAndUpdateOverallMaxScore();
+        if (calculateScoreBtn) {
+            calculateScoreBtn.addEventListener('click', () => {
+                let overallScore = 0;
+                let sectionScoresData = {};
+                let allQuestionsAnswered = true;
+                sectionScoresDisplayDiv.innerHTML = ''; // Curăță scorurile secțiunilor anterioare
+                overallMaxScore = calculateAndUpdateOverallMaxScore(); // Recalculează scorul maxim total
 
-            if (Object.keys(questionnaireVars).length === 0) {
-                 document.querySelectorAll('.question-section').forEach(section => {
+                // Populează questionnaireVars dacă este gol (la primul calcul)
+                if (Object.keys(questionnaireVars).length === 0) {
+                    document.querySelectorAll('.question-section').forEach(section => {
+                        const sectionId = section.dataset.sectionId;
+                        questionnaireVars[sectionId] = { 
+                            'name': section.dataset.sectionName || `Secțiunea ${sectionId}`, 
+                            'questions': {} 
+                        };
+                        section.querySelectorAll('.question').forEach(question => {
+                            const questionId = question.dataset.questionId;
+                            const qVar = { value: -1, points: 0, text: '' }; // Stochează valoarea, punctele și textul răspunsului
+                            const pointsMap = {};
+                            const optionsMap = {};
+                            question.querySelectorAll('input[type="radio"]').forEach(rb => {
+                                const val = parseInt(rb.value, 10);
+                                const points = parseInt(rb.dataset.points, 10);
+                                if (!isNaN(val) && !isNaN(points)) {
+                                    pointsMap[val] = points;
+                                    optionsMap[rb.nextElementSibling.textContent.trim()] = val;
+                                }
+                            });
+                            questionnaireVars[sectionId]['questions'][questionId] = { 
+                                var: qVar, 
+                                pointsMap: pointsMap, // Puncte per valoare opțiune
+                                optionsMap: optionsMap, // Text opțiune -> valoare
+                                label: question.querySelector('p.indicator-text').textContent.trim() // Textul întrebării
+                            };
+                        });
+                    });
+                }
+
+                // Calculează scorurile
+                document.querySelectorAll('.question-section').forEach(section => {
                     const sectionId = section.dataset.sectionId;
-                    questionnaireVars[sectionId] = { 'name': section.dataset.sectionName, 'questions': {} };
+                    const sectionName = section.dataset.sectionName || `Secțiunea ${sectionId}`;
+                    const sectionMaxScore = calculateSectionMaxScore(section);
+                    let currentSectionScore = 0;
+
                     section.querySelectorAll('.question').forEach(question => {
                         const questionId = question.dataset.questionId;
-                        const qVar = { value: -1 }; const pointsMap = {}; const optionsMap = {};
-                        question.querySelectorAll('input[type="radio"]').forEach(rb => {
-                            const val = parseInt(rb.value, 10); const points = parseInt(rb.dataset.points, 10);
-                            if (!isNaN(val) && !isNaN(points)) { pointsMap[val] = points; optionsMap[rb.nextElementSibling.textContent.trim()] = val; }
-                        });
-                        questionnaireVars[sectionId]['questions'][questionId] = { var: qVar, points: pointsMap, options: optionsMap, label: question.querySelector('p.indicator-text') };
+                        const selectedAnswerRadio = question.querySelector('input[type="radio"]:checked');
+                        let score = 0;
+                        let selectedValue = -1;
+                        let selectedText = "Neselectat";
+
+                        if (selectedAnswerRadio && selectedAnswerRadio.dataset.points) {
+                            score = parseInt(selectedAnswerRadio.dataset.points, 10);
+                            selectedValue = parseInt(selectedAnswerRadio.value, 10);
+                            selectedText = selectedAnswerRadio.parentElement.textContent.trim();
+                            if (isNaN(score)) score = 0;
+                            if (isNaN(selectedValue)) selectedValue = -1;
+                        } else {
+                            allQuestionsAnswered = false;
+                        }
+                        currentSectionScore += score;
+                        // Actualizează questionnaireVars cu răspunsul curent
+                        if (questionnaireVars[sectionId] && questionnaireVars[sectionId].questions[questionId]) {
+                            questionnaireVars[sectionId].questions[questionId].var.value = selectedValue;
+                            questionnaireVars[sectionId].questions[questionId].var.points = score;
+                            questionnaireVars[sectionId].questions[questionId].var.text = selectedText;
+                        }
                     });
-                });
-            }
 
-            document.querySelectorAll('.question-section').forEach(section => {
-                const sectionId = section.dataset.sectionId;
-                const sectionName = section.dataset.sectionName || `Secțiunea ${sectionId}`;
-                const sectionMaxScore = calculateSectionMaxScore(section);
-                let currentSectionScore = 0;
-                section.querySelectorAll('.question').forEach(question => {
-                    const questionId = question.dataset.questionId;
-                    const selectedAnswer = question.querySelector('input[type="radio"]:checked');
-                    let score = 0; let selectedValue = -1;
-                    if (selectedAnswer && selectedAnswer.dataset.points) {
-                        score = parseInt(selectedAnswer.dataset.points, 10); selectedValue = parseInt(selectedAnswer.value, 10);
-                        if(isNaN(score)) score = 0; if(isNaN(selectedValue)) selectedValue = -1;
-                    } else { allQuestionsAnswered = false; }
-                    currentSectionScore += score;
-                    if (questionnaireVars[sectionId]?.questions?.[questionId]) { questionnaireVars[sectionId].questions[questionId].var.value = selectedValue; }
+                    const sectionScoreSpan = section.querySelector('.section-score');
+                    if (sectionScoreSpan) sectionScoreSpan.textContent = currentSectionScore;
+                    overallScore += currentSectionScore;
+                    sectionScoresData[sectionId] = { name: sectionName, score: currentSectionScore, maxScore: sectionMaxScore };
+
+                    const scoreLine = document.createElement('p');
+                    scoreLine.classList.add('text-md', 'text-gray-700', 'flex', 'justify-between', 'items-center');
+                    scoreLine.innerHTML = `<span class="font-medium">${sectionId}. ${sectionName}:</span><span class="font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">${currentSectionScore} / ${sectionMaxScore}</span>`;
+                    sectionScoresDisplayDiv.appendChild(scoreLine);
                 });
-                const sectionScoreSpan = section.querySelector('.section-score');
-                if (sectionScoreSpan) sectionScoreSpan.textContent = currentSectionScore;
-                overallScore += currentSectionScore;
-                sectionScoresData[sectionId] = { name: sectionName, score: currentSectionScore, maxScore: sectionMaxScore };
-                const scoreLine = document.createElement('p');
-                scoreLine.classList.add('text-md', 'text-gray-700', 'flex', 'justify-between', 'items-center');
-                scoreLine.innerHTML = `<span class="font-medium">${sectionId}. ${sectionName}:</span><span class="font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">${currentSectionScore} / ${sectionMaxScore}</span>`;
-                sectionScoresDisplayDiv.appendChild(scoreLine);
+
+                if (!allQuestionsAnswered) {
+                    // alert("Atenție! Nu ați răspuns la toate întrebările.");
+                    // Nu blocăm afișarea rezultatelor dacă nu sunt toate răspunsurile bifate
+                }
+
+                totalScoreSpan.textContent = overallScore;
+                let feedbackText = '';
+                let feedbackClass = '';
+                const percentageScore = overallMaxScore > 0 ? (overallScore / overallMaxScore) * 100 : 0;
+                const resourcesLink = "ired.spiruharet.ro";
+                const resourcesLinkHtml = `<a href="http://${resourcesLink}" target="_blank" class="underline font-semibold hover:text-indigo-700">${resourcesLink}</a>`;
+
+                if (percentageScore < 30) {
+                    feedbackText = `<strong>Nivel Insuficient (${percentageScore.toFixed(1)}%)</strong>: Competențele de design și multimedia necesită o dezvoltare fundamentală... Explorați resursele și tutorialele introductive disponibile pe ${resourcesLinkHtml} pentru a consolida aceste noțiuni esențiale.`;
+                    feedbackClass = 'feedback-insufficient';
+                } else if (percentageScore < 60) {
+                    feedbackText = `<strong>Nivel În Dezvoltare (${percentageScore.toFixed(1)}%)</strong>: Competențele sunt de bază, dar necesită îmbunătățiri semnificative... Consultați exemplele de bună practică, ghidurile de stil și tutorialele despre optimizarea media de pe ${resourcesLinkHtml}.`;
+                    feedbackClass = 'feedback-developing';
+                } else if (percentageScore < 85) {
+                    feedbackText = `<strong>Nivel Competent (${percentageScore.toFixed(1)}%)</strong>: Demonstrați o bună înțelegere și aplicare a majorității competențelor... Pentru a atinge excelența, concentrați-vă pe rafinarea detaliilor... Resurse avansate pot fi găsite pe ${resourcesLinkHtml}.`;
+                    feedbackClass = 'feedback-competent';
+                } else {
+                    feedbackText = `<strong>Nivel Exemplar (${percentageScore.toFixed(1)}%)</strong>: Demonstrați o înțelegere excelentă și aplicare consecventă și creativă a competențelor... Felicitări! Puteți explora tehnici avansate pe ${resourcesLinkHtml}.`;
+                    feedbackClass = 'feedback-exemplary';
+                }
+
+                feedbackMessageDiv.innerHTML = feedbackText;
+                feedbackMessageDiv.className = 'text-left font-medium p-4 rounded-md'; // Resetează clasele și adaugă cele de bază
+                feedbackMessageDiv.classList.add(feedbackClass, 'block'); // Adaugă clasa specifică nivelului și 'block'
+                feedbackMessageDiv.classList.remove('hidden'); // Asigură-te că este vizibil
+                resultsDiv.classList.remove('hidden');
+                last_calculated_scores = { total: overallScore, max_total: overallMaxScore, sections: sectionScoresData, feedback: feedbackText };
+
+                // Actualizează și caseta de sumar (print-summary-box) care e hidden, dar e bună pentru date
+                const printSummaryBox = document.getElementById('print-summary-box');
+                if (printSummaryBox) {
+                    document.getElementById('printParticipantName').textContent = participantSelect.options[participantSelect.selectedIndex]?.dataset.name || 'N/A';
+                    document.getElementById('printGroup').textContent = groupSelect.value || 'N/A';
+                    document.getElementById('printEvalDate').textContent = (new Date()).toLocaleDateString('ro-RO');
+                    document.getElementById('printTotalScore').textContent = `${overallScore} / ${overallMaxScore}`;
+                }
+
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
+        }
 
-            if (!allQuestionsAnswered) alert("Atenție! Nu ați răspuns la toate întrebările.");
-
-            totalScoreSpan.textContent = overallScore;
-            let feedbackText = ''; let feedbackClass = '';
-            const percentageScore = overallMaxScore > 0 ? (overallScore / overallMaxScore) * 100 : 0;
-            const resourcesLink = "ired.spiruharet.ro";
-            const resourcesLinkHtml = `<a href="http://${resourcesLink}" target="_blank" class="underline font-semibold hover:text-indigo-700">${resourcesLink}</a>`;
-
-            if (percentageScore < 30) {
-                feedbackText = `<strong>Nivel Insuficient (${percentageScore.toFixed(1)}%)</strong>: Competențele de design și multimedia necesită o dezvoltare fundamentală... Explorați resursele și tutorialele introductive disponibile pe ${resourcesLinkHtml} pentru a consolida aceste noțiuni esențiale.`;
-                feedbackClass = 'feedback-insufficient';
-            } else if (percentageScore < 60) {
-                feedbackText = `<strong>Nivel În Dezvoltare (${percentageScore.toFixed(1)}%)</strong>: Competențele sunt de bază, dar necesită îmbunătățiri semnificative... Consultați exemplele de bună practică, ghidurile de stil și tutorialele despre optimizarea media de pe ${resourcesLinkHtml}.`;
-                feedbackClass = 'feedback-developing';
-            } else if (percentageScore < 85) {
-                feedbackText = `<strong>Nivel Competent (${percentageScore.toFixed(1)}%)</strong>: Demonstrați o bună înțelegere și aplicare a majorității competențelor... Pentru a atinge excelența, concentrați-vă pe rafinarea detaliilor... Resurse avansate pot fi găsite pe ${resourcesLinkHtml}.`;
-                feedbackClass = 'feedback-competent';
-            } else {
-                feedbackText = `<strong>Nivel Exemplar (${percentageScore.toFixed(1)}%)</strong>: Demonstrați o înțelegere excelentă și aplicare consecventă și creativă a competențelor... Felicitări! Puteți explora tehnici avansate pe ${resourcesLinkHtml}.`;
-                feedbackClass = 'feedback-exemplary';
-            }
-            feedbackMessageDiv.innerHTML = feedbackText;
-            feedbackMessageDiv.className = 'text-left font-medium p-4 rounded-md';
-            feedbackMessageDiv.classList.add(feedbackClass, 'block'); 
-            feedbackMessageDiv.classList.remove('hidden'); 
-            resultsDiv.classList.remove('hidden');
-            last_calculated_scores = { total: overallScore, max_total: overallMaxScore, sections: sectionScoresData, feedback: feedbackText };
-
-            const printSummaryBox = document.getElementById('print-summary-box');
-            if (printSummaryBox) {
-                document.getElementById('printParticipantName').textContent = "Cursant: " + (participantSelect.options[participantSelect.selectedIndex]?.dataset.name || 'N/A');
-                document.getElementById('printGroup').textContent = "Grupa: " + (groupSelect.value || 'N/A');
-                document.getElementById('printEvalDate').textContent = "Data evaluării: " + (new Date()).toLocaleDateString('ro-RO');
-                document.getElementById('printTotalScore').textContent = "Punctaj total: " + overallScore + " / " + overallMaxScore;
-            }
-            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });}
-        if (resetBtn) { resetBtn.addEventListener('click', resetForm); }
+        if (resetBtn) {
+            resetBtn.addEventListener('click', resetForm);
+        }
 
         if (printPdfBtn) {
             printPdfBtn.addEventListener('click', () => {
                 if (!last_calculated_scores) {
-                    alert("Vă rugăm calculați scorul înainte de a genera PDF-ul.");
+                    alert("Vă rugăm să calculați scorul înainte de a genera PDF-ul.");
                     return;
                 }
 
-                const selectedParticipantOption = participantSelect.options[participantSelect.selectedIndex];
-                const selectedParticipantName = selectedParticipantOption ? selectedParticipantOption.dataset.name : '';
-                const selectedGroup = groupSelect.value;
-
-                if (!selectedParticipantName || selectedParticipantName === "Selectați Cursantul..." || !selectedGroup || selectedGroup === "Selectați Grupa...") {
-                    alert("Vă rugăm selectați un cursant și o grupă înainte de a genera PDF-ul.");
-                    return;
-                }
-
-                const sanitizeFileNamePart = (str) => {
-                    if (!str) return '';
-                    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_.-]/g, '');
-                };
-                const groupNameForFile = sanitizeFileNamePart(selectedGroup);
-                const participantNameForFile = sanitizeFileNamePart(selectedParticipantName);
-                const fileName = `${groupNameForFile}_${participantNameForFile}_Evaluare.pdf`;
-
-                const elementsToToggle = [
-                    { el: document.getElementById('page-title'), action: 'add_class', class: 'pdf-capture-helper' },
-                    { el: document.getElementById('participant-section'), action: 'add_class', class: 'pdf-capture-helper' },
-                    { el: document.getElementById('action-buttons'), action: 'add_class', class: 'pdf-capture-helper' },
-                    { el: document.getElementById('dataLoadingStatus'), action: 'add_class', class: 'pdf-capture-helper' },
-                    { el: document.getElementById('print-summary-box'), action: 'remove_class', class: 'hidden' }
-                ];
-                
-                // Pregătește DOM pentru captură
-                elementsToToggle.forEach(item => {
-                    if (item.el) {
-                        if (item.action === 'add_class') item.el.classList.add(item.class);
-                        else if (item.action === 'remove_class') item.el.classList.remove(item.class);
-                    }
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: 'a4',
+                    // putOnlyUsedFonts:true // Poate ajuta la dimensiunea fișierului
                 });
-                // Populează sumarul (dacă nu e deja populat)
-                const printSummaryBox = document.getElementById('print-summary-box');
-                 if (printSummaryBox) {
-                     document.getElementById('printParticipantName').textContent = "Cursant: " + (selectedParticipantName || 'N/A');
-                     document.getElementById('printGroup').textContent = "Grupa: " + (selectedGroup || 'N/A');
-                     document.getElementById('printEvalDate').textContent = "Data evaluării: " + (new Date()).toLocaleDateString('ro-RO');
-                     document.getElementById('printTotalScore').textContent = "Punctaj total: " + last_calculated_scores.total + " / " + last_calculated_scores.max_total;
-                 }
+
+                // --- Informații Document ---
+                const selectedParticipantName = document.getElementById('printParticipantName').textContent.replace('Cursant: ','').trim() || 'N/A';
+                const selectedGroup = document.getElementById('printGroup').textContent.replace('Grupa: ','').trim() || 'N/AGrupă';
+                const currentDate = document.getElementById('printEvalDate').textContent.replace('Data evaluării: ','').trim();
+
+                const sanitizeFileNamePart = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_.-]/g, '');
+                const fileName = `${sanitizeFileNamePart(selectedGroup)}_${sanitizeFileNamePart(selectedParticipantName)}_Evaluare.pdf`;
+
+                // --- Definire Constante Layout ---
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const leftMargin = 10; // 1cm
+                const rightMargin = 10; // 1cm
+                const topMargin = 15;
+                const bottomMargin = 15;
+                const usableWidth = pageWidth - leftMargin - rightMargin;
+                let currentY = topMargin;
+                const baseFontSize = 9;
+                const titleFontSize = 12;
+                const smallFontSize = 8;
+                const lineSpacing = 5; // Spațiu adițional după un rând de text (total ~7-8mm per linie baseFontSize)
+                const cellPadding = 2;
 
 
-                const elementToCapture = document.getElementById('page-content-for-capture');
-                const { jsPDF } = window.jspdf; // Asigură-te că ai acces la jsPDF
-
-                // Setează lățimea containerului .page-container la o valoare fixă în pixeli pentru html2canvas
-                // A4 width @ 96 DPI ~ 794px. Folosim o valoare puțin mai mare pentru calitate, ex. 1000px sau 1200px.
-                const captureWidthPx = 1200; // Lățime fixă pentru captură, ajustează după nevoie
-                const originalPageContainerWidth = document.querySelector('.page-container').style.width;
-                document.querySelector('.page-container').style.width = `${captureWidthPx}px`;
+                // --- Funcții ajutătoare PDF ---
+                function checkNewPage(neededHeight = 20) {
+                    if (currentY + neededHeight > pageHeight - bottomMargin) {
+                        doc.addPage();
+                        currentY = topMargin;
+                        addPdfHeader(); // Adaugă antet pe pagina nouă
+                        addPdfFooter(); // Adaugă subsol pe pagina nouă (dacă e cazul, jsPDF adaugă automat la save)
+                        return true; // Pagina nouă a fost adăugată
+                    }
+                    return false;
+                }
                 
-                // Asigură-te că fonturile sunt gata
-                document.fonts.ready.then(() => {
-                    html2canvas(elementToCapture, {
-                        scale: window.devicePixelRatio || 2, // Folosește devicePixelRatio pentru claritate pe ecrane HiDPI
-                        useCORS: true,
-                        backgroundColor: '#ffffff',
-                        width: captureWidthPx, // Lățimea setată mai sus
-                        height: elementToCapture.scrollHeight, // Înălțimea completă a conținutului
-                        windowWidth: captureWidthPx,
-                        windowHeight: elementToCapture.scrollHeight,
-                        scrollX: 0, // Asigură că nu există scroll orizontal neașteptat
-                        scrollY: -window.scrollY // Compensează scroll-ul paginii principale
-                    }).then(canvas => {
-                        document.querySelector('.page-container').style.width = originalPageContainerWidth; // Restaurează lățimea
+                function addPdfHeader() {
+                    // Exemplu simplu de antet text - imaginea e mai complexă
+                    doc.setFontSize(smallFontSize);
+                    doc.setTextColor(100);
+                    doc.text("Raport Evaluare Competențe Multimedia", pageWidth / 2, topMargin / 2, { align: 'center' });
+                    doc.setDrawColor(150);
+                    doc.line(leftMargin, topMargin / 2 + 2, pageWidth - rightMargin, topMargin / 2 + 2);
+                }
 
-                        const imgData = canvas.toDataURL('image/png', 1.0);
-                        const pdf = new jsPDF('p', 'mm', 'a4');
-                        const pdfPageWidthMM = pdf.internal.pageSize.getWidth();
-                        const pdfPageHeightMM = pdf.internal.pageSize.getHeight();
+                function addPdfFooter(pageNumber, totalPages) {
+                     doc.setFontSize(smallFontSize);
+                     doc.setTextColor(100);
+                     const footerTextContent = document.getElementById('page-footer-text').textContent.trim().replace(/\s+/g, ' ');
+                     const footerLines = doc.splitTextToSize(footerTextContent, usableWidth);
+                     doc.text(footerLines, leftMargin, pageHeight - bottomMargin + 7, {align: 'center'});
+                     doc.text(`Pagina ${pageNumber} / ${totalPages}`, pageWidth / 2, pageHeight - 5, { align: 'center' });
+                }
+                
+                addPdfHeader(); // Antet pentru prima pagină
 
-                        const canvasOriginalWidthPx = canvas.width;
-                        const canvasOriginalHeightPx = canvas.height;
+                // Informații evaluare
+                doc.setFontSize(titleFontSize);
+                doc.setFont(undefined, 'bold');
+                currentY = checkNewPage(20) ? topMargin + 10 : currentY; // Ajustează Y dacă s-a adăugat pagină
+                doc.text("Informații Evaluare", leftMargin, currentY);
+                currentY += lineSpacing * 1.5;
 
-                        const scaledTotalHeightMM = (canvasOriginalHeightPx * pdfPageWidthMM) / canvasOriginalWidthPx;
-                        let numPages = Math.ceil(scaledTotalHeightMM / pdfPageHeightMM);
-                        if (numPages === 0) numPages = 1;
+                doc.setFontSize(baseFontSize);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Cursant: ${selectedParticipantName}`, leftMargin, currentY);
+                currentY += lineSpacing;
+                doc.text(`Grupa: ${selectedGroup}`, leftMargin, currentY);
+                currentY += lineSpacing;
+                doc.text(`Data evaluării: ${currentDate}`, leftMargin, currentY);
+                currentY += lineSpacing;
+                doc.text(`Punctaj total: ${last_calculated_scores.total} / ${last_calculated_scores.max_total}`, leftMargin, currentY);
+                currentY += lineSpacing * 2;
 
-                        let yCanvasPosPx = 0;
+                // --- Generare Tabel pentru Întrebări ---
+                const colWidths = [15, 100, 55, 20]; // Nr, Intrebare+Optiuni, Raspuns Selectat, Punctaj
 
-                        for (let i = 0; i < numPages; i++) {
-                            if (i > 0) pdf.addPage();
-                            
-                            let sliceHeightPx = (pdfPageHeightMM * canvasOriginalWidthPx) / pdfPageWidthMM;
-                            sliceHeightPx = Math.min(sliceHeightPx, canvasOriginalHeightPx - yCanvasPosPx);
+                // Antet Tabel (opțional, dar util pentru claritate)
+                // doc.setFont(undefined, 'bold');
+                // currentY = checkNewPage(lineSpacing*2) ? topMargin : currentY;
+                // doc.text("Nr.", leftMargin + cellPadding, currentY);
+                // doc.text("Criteriu / Întrebare / Opțiuni", leftMargin + colWidths[0] + cellPadding, currentY);
+                // doc.text("Răspuns Selectat", leftMargin + colWidths[0] + colWidths[1] + cellPadding, currentY);
+                // doc.text("Punctaj", leftMargin + colWidths[0] + colWidths[1] + colWidths[2] + cellPadding, currentY);
+                // currentY += lineSpacing;
+                // doc.line(leftMargin, currentY, pageWidth - rightMargin, currentY); // Linie sub antet tabel
+                // currentY += cellPadding;
 
-                            if (sliceHeightPx <= 0) continue;
 
-                            const tempCanvas = document.createElement('canvas');
-                            tempCanvas.width = canvasOriginalWidthPx;
-                            tempCanvas.height = sliceHeightPx;
-                            const tempCtx = tempCanvas.getContext('2d');
-                            tempCtx.drawImage(canvas, 0, yCanvasPosPx, canvasOriginalWidthPx, sliceHeightPx, 0, 0, canvasOriginalWidthPx, sliceHeightPx);
-                            
-                            const pageImgData = tempCanvas.toDataURL('image/png', 1.0);
-                            let heightOnPageMM = (sliceHeightPx * pdfPageWidthMM) / canvasOriginalWidthPx;
-                            
-                            pdf.addImage(pageImgData, 'PNG', 0, 0, pdfPageWidthMM, heightOnPageMM);
-                            yCanvasPosPx += sliceHeightPx;
+                Object.keys(questionnaireVars).forEach(sectionId => {
+                    const section = questionnaireVars[sectionId];
+                    checkNewPage(25); // Spațiu pentru titlul secțiunii
+                    doc.setFontSize(titleFontSize - 2);
+                    doc.setFont(undefined, 'bold');
+                    let sectionTitleLines = doc.splitTextToSize(`${sectionId}. ${section.name}`, usableWidth);
+                    doc.text(sectionTitleLines, leftMargin, currentY);
+                    currentY += (sectionTitleLines.length * lineSpacing * 0.8) + lineSpacing * 0.5;
+                    
+                    doc.setFontSize(baseFontSize);
+                    doc.setFont(undefined, 'normal');
+
+                    Object.keys(section.questions).forEach(questionId => {
+                        const questionData = section.questions[questionId];
+                        checkNewPage(30); // Estimare spațiu per întrebare + opțiuni
+
+                        let questionFullText = `${questionId} ${questionData.label}`;
+                        let questionLines = doc.splitTextToSize(questionFullText, colWidths[0] + colWidths[1] - (cellPadding*2) );
+                        
+                        let initialYForQuestion = currentY;
+                        let questionTextEndY = initialYForQuestion + (questionLines.length -1) * lineSpacing * 0.7;
+
+                        doc.setFont(undefined, 'bold');
+                        doc.text(questionLines, leftMargin + cellPadding, currentY);
+                        doc.setFont(undefined, 'normal');
+
+                        let optionsY = questionTextEndY + lineSpacing;
+                        let maxOptionY = optionsY;
+
+                        // Afișare opțiuni sub întrebare (coloana 2)
+                        const radioOptionsContainer = document.querySelector(`.question[data-question-id="${questionId}"] .radio-options-vertical`);
+                        if (radioOptionsContainer) {
+                            const options = radioOptionsContainer.querySelectorAll('label');
+                            options.forEach(optLabelNode => {
+                                checkNewPage(lineSpacing); 
+                                const optText = optLabelNode.textContent.trim();
+                                const isSelected = optLabelNode.querySelector('input[type="radio"]').value == questionData.var.value;
+                                
+                                doc.setFontSize(baseFontSize -1);
+                                doc.setFont(undefined, isSelected ? 'bold' : 'normal');
+                                doc.setTextColor(isSelected ? '#4f46e5' : 0); // Evidențiază selectat
+
+                                let optionLines = doc.splitTextToSize(`- ${optText}`, colWidths[1] - (cellPadding*2) - 5 ); // 5 pentru indentare
+                                doc.text(optionLines, leftMargin + colWidths[0] + 5, optionsY);
+                                optionsY += (optionLines.length * lineSpacing * 0.65) + 2; // Ajustează spațierea pentru opțiuni
+                                maxOptionY = Math.max(maxOptionY, optionsY);
+                            });
                         }
-                        pdf.save(fileName);
+                        doc.setTextColor(0); // Reset text color
 
-                    }).catch(error => {
-                        console.error("Eroare la generarea PDF cu html2canvas:", error);
-                        alert("A apărut o eroare la generarea PDF-ului. Verificați consola.");
-                        document.querySelector('.page-container').style.width = originalPageContainerWidth; // Restaurează și la eroare
-                    }).finally(() => {
-                        // Restaurează DOM
-                        elementsToToggle.forEach(item => {
-                            if (item.el) {
-                                if (item.action === 'add_class') item.el.classList.remove(item.class);
-                                else if (item.action === 'remove_class') item.el.classList.add(item.class);
-                            }
-                        });
+                        // Punctaj în ultima coloană, aliniat cu textul întrebării
+                        doc.setFontSize(baseFontSize);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(questionData.var.points.toString(), leftMargin + colWidths[0] + colWidths[1] + colWidths[2] + cellPadding, initialYForQuestion + (lineSpacing*0.7)/2);
+
+                        currentY = maxOptionY + lineSpacing * 0.5; // Mută currentY sub cea mai lungă opțiune
+                        
+                        checkNewPage(5);
+                        doc.setDrawColor(200); // Light gray line
+                        doc.line(leftMargin, currentY - lineSpacing * 0.25, pageWidth - rightMargin, currentY - lineSpacing*0.25); // Linie după fiecare întrebare
                     });
-                }); // Sfârșitul document.fonts.ready
+                    currentY += lineSpacing; // Spațiu după fiecare secțiune
+                });
+
+                // --- Sumar Scoruri Secțiuni și Feedback ---
+                checkNewPage(50); // Spațiu pentru sumar
+                currentY = addLine(currentY + lineSpacing);
+                doc.setFontSize(titleFontSize - 1);
+                doc.setFont(undefined, 'bold');
+                doc.text("Sumar Scoruri", leftMargin, currentY);
+                currentY += lineSpacing * 1.5;
+
+                doc.setFontSize(baseFontSize);
+                doc.setFont(undefined, 'normal');
+                for (const sectionId in last_calculated_scores.sections) {
+                    const sec = last_calculated_scores.sections[sectionId];
+                    checkNewPage(lineSpacing);
+                    doc.text(`${sectionId}. ${sec.name}:`, leftMargin, currentY);
+                    doc.text(`${sec.score} / ${sec.maxScore}`, pageWidth - rightMargin - 30, currentY, {align: 'right'});
+                    currentY += lineSpacing;
+                }
+                currentY += lineSpacing * 0.5;
+                doc.setFont(undefined, 'bold');
+                checkNewPage(lineSpacing);
+                doc.text(`Scor Total General:`, leftMargin, currentY);
+                doc.text(`${last_calculated_scores.total} / ${last_calculated_scores.max_total}`, pageWidth - rightMargin - 30, currentY, {align: 'right'});
+                currentY += lineSpacing * 2;
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.innerHTML = last_calculated_scores.feedback;
+                const feedbackTextForPdf = feedbackDiv.innerText || feedbackDiv.textContent || "";
+                
+                doc.setFontSize(baseFontSize);
+                doc.setFont(undefined, 'italic');
+                checkNewPage(40);
+                const feedbackLines = doc.splitTextToSize(feedbackTextForPdf, usableWidth);
+                doc.text(feedbackLines, leftMargin, currentY);
+                currentY += feedbackLines.length * lineSpacing * 0.7;
+
+
+                // Adaugă subsolul pe toate paginile
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    addPdfFooter(i, totalPages); 
+                }
+
+                doc.save(fileName);
             });
         }
         calculateAndUpdateOverallMaxScore();
