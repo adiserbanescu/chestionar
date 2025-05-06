@@ -836,7 +836,7 @@
                     sectionScoresData[sectionId] = { name: sectionName, score: currentSectionScore, maxScore: sectionMaxScore };
                     const scoreLine = document.createElement('p');
                     scoreLine.classList.add('text-md', 'text-gray-700', 'flex', 'justify-between', 'items-center');
-                    scoreLine.innerHTML = `<span class="font-medium">${sectionId}. <span class="math-inline">\{sectionName\}\:</span\><span class\="font\-semibold text\-indigo\-600 bg\-indigo\-50 px\-2 py\-1 rounded"\></span>{currentSectionScore} / ${sectionMaxScore}</span>`;
+                    scoreLine.innerHTML = `<span class="font-medium">${sectionId}. ${sectionName}:</span><span class="font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">${currentSectionScore} / ${sectionMaxScore}</span>`;
                     sectionScoresDisplayDiv.appendChild(scoreLine);
                 });
 
@@ -846,7 +846,7 @@
                 let feedbackText = ''; let feedbackClass = '';
                 const percentageScore = overallMaxScore > 0 ? (overallScore / overallMaxScore) * 100 : 0;
                 const resourcesLink = "ired.spiruharet.ro";
-                const resourcesLinkHtml = `<a href="http://<span class="math-inline">\{resourcesLink\}" target\="\_blank" class\="underline font\-semibold hover\:text\-indigo\-700"\></span>{resourcesLink}</a>`;
+                const resourcesLinkHtml = `<a href="http://${resourcesLink}" target="_blank" class="underline font-semibold hover:text-indigo-700">${resourcesLink}</a>`;
 
                 if (percentageScore < 30) {
                     feedbackText = `<strong>Nivel Insuficient (${percentageScore.toFixed(1)}%)</strong>: Competențele de design și multimedia necesită o dezvoltare fundamentală... Explorați resursele și tutorialele introductive disponibile pe ${resourcesLinkHtml} pentru a consolida aceste noțiuni esențiale.`;
@@ -902,7 +902,7 @@
                     };
                     const groupNameForFile = sanitizeFileNamePart(selectedGroup);
                     const participantNameForFile = sanitizeFileNamePart(selectedParticipantName);
-                    const fileName = `<span class="math-inline">\{groupNameForFile\}\_</span>{participantNameForFile}_Evaluare.pdf`;
+                    const fileName = `${groupNameForFile}_${participantNameForFile}_Evaluare.pdf`;
 
                     // Elemente de ascuns/modificat pentru captura
                     const elementsToHideTemporarily = [
@@ -979,4 +979,37 @@
                                 pageCanvas.width = imgWidth; // lățimea originală a canvasului sursă
                                 pageCanvas.height = sliceHeight;
 
-                                // Desenează porțiunea din canvasul
+                                // Desenează porțiunea din canvasul original pe canvasul temporar
+                                pageCtx.drawImage(canvas, 0, y, imgWidth, sliceHeight, 0, 0, imgWidth, sliceHeight);
+                                
+                                const pageImgData = pageCanvas.toDataURL('image/png');
+                                
+                                if (y > 0) {
+                                    pdf.addPage();
+                                }
+                                pdf.addImage(pageImgData, 'PNG', 0, 0, pdfWidth, pdfHeight); // Întinde pe toată pagina
+                            }
+                        }
+                        
+                        pdf.save(fileName);
+
+                    }).catch(error => {
+                        console.error("Eroare la generarea PDF cu html2canvas:", error);
+                        alert("A apărut o eroare la generarea PDF-ului. Verificați consola.");
+                    }).finally(() => {
+                        // Restaurează stările originale ale elementelor
+                        elementsToHideTemporarily.forEach(el => {
+                            if (el) el.style.display = originalDisplayStates.get(el);
+                        });
+                        if (printSummaryBox && printSummaryBoxWasHidden) {
+                            printSummaryBox.classList.add('hidden');
+                        }
+                    });
+                });
+            }
+            calculateAndUpdateOverallMaxScore();
+        }); // End DOMContentLoaded
+        </script>
+
+</body>
+</html>
