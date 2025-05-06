@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluare Competente Design Multimedia</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <style>
         /* Stiluri generale */
         body {
@@ -24,59 +26,21 @@
             position: relative;
         }
         #main-content { }
-        #header-image-inline {
+        #header-image-inline { /* Acum folosit doar pentru afișarea pe ecran */
              display: block; width: 100%; max-width: 100%; height: auto;
              margin-left: auto; margin-right: auto;
              margin-bottom: 10mm;
         }
-        /* Footer eliminat */
+        /* Footer imagine eliminat din HTML, textul va fi adăugat direct în PDF */
 
-        /* Stiluri pentru caseta de sumar (ascunsă pe ecran) */
-        #print-summary-box {
-            /* Ascuns pe ecran implicit cu clasa 'hidden' */
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 15px;
-            background: #f9f9f9;
-            font-size: 10pt;
-        }
-         #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
-         #print-summary-box p { margin-bottom: 4px; }
-
-
-        /* Stiluri specifice pentru printare */
-        @media print {
-            body { background-color: white; padding: 0; margin: 0; font-size: 9pt; }
-            .page-container { width: 100%; min-height: 0; height: auto; margin: 0; box-shadow: none; padding: 0; border: none; }
-            #main-content { padding: 15mm 15mm 15mm 15mm; } /* Margini egale la print */
-            /* Ascundem elementele non-print */
-            #participant-section, #action-buttons, #dataLoadingStatus, h1#page-title { display: none !important; }
-            /* Afișăm antetul și caseta de sumar la print */
-            #header-image-inline { display: block !important; margin-bottom: 8mm !important; }
-            #print-summary-box { display: block !important; page-break-after: avoid !important; } /* Afișăm caseta la print */
-            /* Footer eliminat */
-            .question-section { page-break-inside: avoid !important; box-shadow: none; border: none; margin-bottom: 0.5rem; padding: 0.5rem 0; }
-            h2.section-title { margin-bottom: 0.5rem; padding-bottom: 0.2rem; font-size: 10pt; border-bottom: 1px solid #ccc; }
-            .criteria-title { font-size: 9pt; margin-bottom: 0.4rem; }
-            .question { margin-left: 0; margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: none; } /* Fără linie */
-            /* Ajustare layout radio pentru print */
-            .radio-options-vertical { display: flex; flex-direction: column; }
-            .radio-options-vertical label { margin-bottom: 1mm !important; } /* Spațiere redusă între radio */
-            label { font-size: 8pt; line-height: 1.2; }
-            input[type="radio"] { width: 0.8rem; height: 0.8rem; top: 0.1rem; border-width: 1px; }
-            input[type="radio"]:checked::after { width: 0.35rem; height: 0.35rem; }
-            #results { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ccc; page-break-before: auto; }
-            #results h2 { font-size: 11pt; margin-bottom: 0.4rem; }
-            #sectionScoresDisplay p { font-size: 8.5pt; padding: 0.15rem 0; border: none; background: none; }
-            #results > div.text-center { font-size: 10pt; padding: 0.4rem; margin-bottom: 0.4rem; }
-            #feedbackMessage { font-size: 9pt; padding: 0.5rem; border: none; background: none !important; color: black !important; }
-            a { text-decoration: none; color: inherit; }
-        }
-
-        /* Restul stilurilor */
+        /* Restul stilurilor (radio, dropdown, etc.) */
+        input[type="radio"] { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 1.1rem; height: 1.1rem; border: 2px solid #cbd5e1; border-radius: 50%; outline: none; cursor: pointer; margin-right: 0.5rem; position: relative; top: 0.2rem; transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; flex-shrink: 0; }
         input[type="radio"]:hover { border-color: #9ca3af; }
         input[type="radio"]:checked { border-color: #4f46e5; background-color: #4f46e5; }
         input[type="radio"]:checked::after { content: ''; display: block; width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        label { cursor: pointer; display: flex; align-items: center; margin-bottom: 0.25rem; line-height: 1.4; font-size: 0.85rem; color: #374151; }
+        .radio-options-vertical { display: flex; flex-direction: column; }
+        .radio-options-vertical label { margin-bottom: 0.4rem; }
         select { padding: 0.4rem 2.5rem 0.4rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; width: 100%; box-sizing: border-box; font-size: 0.875rem; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 1.5em 1.5em; transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
         select:disabled { background-color: #f3f4f6; cursor: not-allowed; opacity: 0.7; }
         select:focus { outline: 2px solid transparent; outline-offset: 2px; border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5); }
@@ -95,12 +59,9 @@
         #dataLoadingStatus.error { color: #b91c1c; background-color: #fee2e2; border-color: #fca5a5; }
         .section-title { font-size: 1.1rem; font-weight: 600; color: #1e3a8a; margin-bottom: 0.8rem; border-bottom: 1px solid #d1d5db; padding-bottom: 0.4rem; }
         .criteria-title { font-size: 0.9rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem; padding-top: 0.3rem; }
-        .question { margin-left: 0.3rem; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: none; } /* Eliminat border-bottom */
+        .question { margin-left: 0.3rem; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: none; }
         .indicator-text { font-weight: 500; color: #4b5563; margin-bottom: 0.3rem; display: flex; align-items: flex-start; font-size: 0.8rem; }
         .indicator-prefix { font-weight: 600; margin-right: 0.4rem; color: #1e3a8a; min-width: 3em; }
-        /* Clasă pentru a aranja opțiunile radio vertical */
-        .radio-options-vertical { display: flex; flex-direction: column; }
-        .radio-options-vertical label { margin-bottom: 0.4rem; /* Spațiu între opțiuni */ }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -149,15 +110,6 @@
                     </div>
                  </div>
             </div>
-
-            <div id="print-summary-box" class="hidden"> <h2 class="text-lg font-semibold mb-2">Informații Evaluare</h2>
-                <p id="printParticipantName" class="text-sm"></p>
-                <p id="printGroup" class="text-sm"></p>
-                <p id="printEvalDate" class="text-sm"></p>
-                <p id="printTotalScore" class="text-sm font-medium"></p>
-                <hr class="mt-4 mb-2 border-gray-300">
-            </div>
-
 
             <form id="evaluationForm">
                 <div class="space-y-6">
@@ -563,8 +515,8 @@
                      <button type="button" id="calculateScoreBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-lg w-full sm:w-auto">
                         Calculează Scorul & Afișează Feedback
                     </button>
-                     <button type="button" id="savePdfBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg w-full sm:w-auto">
-                        Salvează PDF <span id="pdfLoader" class="loader hidden"></span>
+                     <button type="button" id="printPdfBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg w-full sm:w-auto">
+                        Print / Salvează PDF
                     </button>
                 </div>
             </form>
@@ -579,9 +531,7 @@
                      </div>
             </div>
 
-             <img id="footer-image-inline" src="footer_color.jpg" alt="Subsol">
-
-        </div> </div>
+             </div> </div>
 
         <script>
         // --- Structura globală pentru datele procesate ---
@@ -759,14 +709,13 @@
             const participantSelect = document.getElementById('participantSelect');
             const participantEmailDisplay = document.getElementById('participantEmailDisplay');
             const calculateScoreBtn = document.getElementById('calculateScoreBtn');
-            const savePdfBtn = document.getElementById('savePdfBtn'); // Actualizat ID
+            const printPdfBtn = document.getElementById('printPdfBtn'); // Actualizat ID
             const resetBtn = document.getElementById('resetBtn');
-            const pdfLoader = document.getElementById('pdfLoader');
             const resultsDiv = document.getElementById('results');
             const totalScoreSpan = document.getElementById('totalScore');
             const feedbackMessageDiv = document.getElementById('feedbackMessage');
             const sectionScoresDisplayDiv = document.getElementById('sectionScoresDisplay');
-            const pageContentDiv = document.getElementById('page-content'); // Containerul principal pt PDF
+            const mainContentDiv = document.getElementById('main-content'); // Referință la div-ul principal
 
             loadAndProcessEvaluationData();
 
@@ -915,102 +864,41 @@
                  resetBtn.addEventListener('click', resetForm);
              }
 
-             // --- Event Listener pentru Buton Salvează PDF (folosind html2pdf.js) ---
-            if (savePdfBtn && typeof html2pdf === 'function') {
-                savePdfBtn.addEventListener('click', () => {
-                    const selectedParticipantName = participantSelect.value;
-                    const selectedGroupName = groupSelect.value;
-
-                    if (!selectedParticipantName || selectedParticipantName === "Selectați Cursantul...") {
-                        alert("Selectați un cursant înainte de generarea PDF.");
-                        return;
-                    }
+             // --- Event Listener pentru Buton Print PDF ---
+             if (printPdfBtn) {
+                 printPdfBtn.addEventListener('click', () => {
                     if (!last_calculated_scores) {
-                        alert("Calculați scorul înainte de a genera PDF.");
-                        return;
-                    }
+                         alert("Vă rugăm calculați scorul înainte de a printa/salva ca PDF.");
+                         return;
+                     }
+                     const selectedParticipantName = participantSelect.value;
+                     if (!selectedParticipantName || selectedParticipantName === "Selectați Cursantul...") {
+                         alert("Vă rugăm selectați un cursant înainte de a printa/salva ca PDF.");
+                         return;
+                     }
+                     // Adăugăm informațiile selectate în caseta de sumar
+                     const printSummaryBox = document.getElementById('print-summary-box');
+                     if (printSummaryBox) {
+                         document.getElementById('printParticipantName').textContent = "Cursant: " + (participantSelect.value || 'N/A');
+                         document.getElementById('printGroup').textContent = "Grupa: " + (groupSelect.value || 'N/A');
+                         document.getElementById('printEvalDate').textContent = "Data evaluării: " + (new Date()).toLocaleDateString('ro-RO');
+                         document.getElementById('printTotalScore').textContent = "Punctaj total: " + last_calculated_scores.total + " / " + last_calculated_scores.max_total;
+                         // Afișăm caseta DOAR pentru printare (folosind clasa CSS @media print)
+                         printSummaryBox.classList.remove('hidden');
+                     } else {
+                         console.error("Elementul #print-summary-box nu a fost găsit!");
+                     }
 
-                    const pdfLoader = document.getElementById('pdfLoader');
-                    pdfLoader.classList.remove('hidden');
-                    savePdfBtn.disabled = true;
+                     window.print(); // Deschide dialogul de printare
 
-                    const elementToSave = document.getElementById('page-content');
-
-                    // Afișăm temporar doar elementele dorite în PDF
-                    const printSummaryBox = document.getElementById('print-summary-box');
-                    const actionButtons = document.getElementById('action-buttons');
-                    const participantSection = document.getElementById('participant-section');
-                    const dataLoadingStatus = document.getElementById('dataLoadingStatus');
-                    const pageTitle = document.getElementById('page-title');
-
-                    // Stocăm stările inițiale de display
-                    const actionButtonsInitialDisplay = actionButtons ? getComputedStyle(actionButtons).display : '';
-                    const participantSectionInitialDisplay = participantSection ? getComputedStyle(participantSection).display : '';
-                    const dataLoadingStatusInitialDisplay = dataLoadingStatus ? getComputedStyle(dataLoadingStatus).display : '';
-                    const pageTitleInitialDisplay = pageTitle ? getComputedStyle(pageTitle).display : '';
-
-
-                    if (printSummaryBox) printSummaryBox.style.display = 'block'; // Facem caseta vizibilă pentru captură
-                    if (actionButtons) actionButtons.style.display = 'none';
-                    if (participantSection) participantSection.style.display = 'none';
-                    if (dataLoadingStatus) dataLoadingStatus.style.display = 'none';
-                    if (pageTitle) pageTitle.style.display = 'none';
-
-
-                    // Actualizare sumar evaluare
-                    document.getElementById('printParticipantName').textContent = "Cursant: " + selectedParticipantName;
-                    document.getElementById('printGroup').textContent = "Grupa: " + selectedGroupName;
-                    document.getElementById('printEvalDate').textContent = "Data evaluării: " + new Date().toLocaleDateString('ro-RO');
-                    document.getElementById('printTotalScore').textContent = "Punctaj total: " + document.getElementById('totalScore').textContent + " / " + document.getElementById('maxTotalScore').textContent;
-
-
-                    // Construiește numele fișierului
-                    const safeParticipantName = selectedParticipantName.replace(/[^a-z0-9ăâîșț]/gi, '_');
-                    const safeGroupName = selectedGroupName.replace(/[^a-z0-9ăâîșț]/gi, '_');
-                    const filename = `Evaluare_${safeGroupName}_${safeParticipantName}.pdf`;
-
-                    // Configurare html2pdf.js
-                    const opt = {
-                        margin: [5, 5, 5, 5], // margini foarte mici [sus, dreapta, jos, stânga]
-                        filename: filename,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: {
-                            scale: 1.5, // Scalare optimă (testată pentru a4)
-                            useCORS: true,
-                            logging: false,
-                            windowWidth: 794,    // lățime exactă A4 la 96dpi
-                            windowHeight: 1123, // înălțime exactă A4 la 96dpi
-                        },
-                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                        pagebreak: { mode: ['avoid-all', 'css'] } // evită împărțirea pe pagini nedorită
-                    };
-
-                    window.scrollTo(0, 0); // Asigură-te că pagina este în poziția corectă pentru captură
-
-                    html2pdf().set(opt).from(elementToSave).save().then(() => {
-                        // Restaurăm stările după generare PDF
-                        if (printSummaryBox) printSummaryBox.style.display = 'none';
-                        if (actionButtons) actionButtons.style.display = actionButtonsInitialDisplay || 'flex';
-                        if (participantSection) participantSection.style.display = participantSectionInitialDisplay || 'block';
-                        if (dataLoadingStatus && !dataLoadingStatus.classList.contains('error')) dataLoadingStatus.style.display = dataLoadingStatusInitialDisplay || 'block';
-                        if (pageTitle) pageTitle.style.display = pageTitleInitialDisplay || 'block';
-
-                        pdfLoader.classList.add('hidden');
-                        savePdfBtn.disabled = false;
-                    }).catch(err => {
-                        alert("Eroare la generarea PDF-ului: " + err.message);
-                         // Restaurăm stările și în caz de eroare
-                        if (printSummaryBox) printSummaryBox.style.display = 'none';
-                        if (actionButtons) actionButtons.style.display = actionButtonsInitialDisplay || 'flex';
-                        if (participantSection) participantSection.style.display = participantSectionInitialDisplay || 'block';
-                        if (dataLoadingStatus && !dataLoadingStatus.classList.contains('error')) dataLoadingStatus.style.display = dataLoadingStatusInitialDisplay || 'block';
-                        if (pageTitle) pageTitle.style.display = pageTitleInitialDisplay || 'block';
-                        pdfLoader.classList.add('hidden');
-                        savePdfBtn.disabled = false;
-                    });
-                });
-            }
-
+                     // Ascundem caseta de sumar după un scurt delay
+                     setTimeout(() => {
+                         if (printSummaryBox) {
+                             printSummaryBox.classList.add('hidden');
+                         }
+                     }, 500);
+                 });
+             }
 
              calculateAndUpdateOverallMaxScore();
 
