@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evaluare Competente Design Multimedia</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>Evaluare Competente Design Multimedia</title> <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            font-family: 'Inter', sans-serif; /* Fontul pentru pagina web */
+            font-family: 'Inter', Arial, sans-serif; /* Adăugat Arial ca fallback general */
             background-color: #e5e7eb;
             padding-top: 1rem;
             padding-bottom: 2rem;
@@ -16,10 +14,12 @@
         .page-container {
             background-color: white;
             width: 210mm;
+            min-height: 297mm; /* Asigură aspectul de pagină A4 */
             margin: 1rem auto;
-            padding: 15mm 18mm 10mm 18mm;
+            padding: 15mm 18mm; /* Padding general al containerului de pagină */
             box-shadow: 0 2px 15px rgba(0,0,0,0.15);
             box-sizing: border-box;
+            position: relative;
         }
         #header-image-inline {
              display: block; width: 100%; max-width: 100%; height: auto;
@@ -27,7 +27,7 @@
              margin-bottom: 10mm;
         }
         #page-footer-text {
-            margin-top: 10mm;
+            margin-top: 15mm;
             text-align: center;
             font-size: 0.7rem;
             color: #6b7280;
@@ -40,6 +40,65 @@
         #print-summary-box h2 { margin-bottom: 8px; font-size: 11pt; font-weight: bold; }
         #print-summary-box p { margin-bottom: 4px; }
 
+        /* Stiluri specifice pentru printare / PDF */
+        @media print {
+            body { background-color: white !important; padding: 0; margin: 0; font-size: 9pt; font-family: Arial, Helvetica, sans-serif !important; }
+            .page-container { 
+                width: 100%; 
+                min-height: 0; 
+                height: auto; 
+                margin: 0; 
+                box-shadow: none; 
+                padding: 0; /* Fără padding pe containerul principal la print */
+                border: none; 
+            }
+            #main-content { 
+                padding: 10mm; /* Margini de 1cm în jurul conținutului principal */
+            }
+            #participant-section, #action-buttons, #dataLoadingStatus, h1#page-title { 
+                display: none !important; 
+            }
+            #header-image-inline { display: block !important; margin-bottom: 8mm !important; }
+            #print-summary-box { display: block !important; page-break-after: avoid !important; border: none; background: none; padding: 0; margin-bottom: 10mm; }
+            #print-summary-box #printEvalDate { display: none !important; } /* Ascunde data evaluării la print */
+            
+            .question-section { page-break-inside: avoid !important; box-shadow: none; border: none; margin-bottom: 0.5rem; padding: 0.5rem 0; }
+            h2.section-title { margin-bottom: 0.5rem; padding-bottom: 0.2rem; font-size: 11pt; border-bottom: 1px solid #ccc; }
+            .criteria-title { font-size: 10pt; margin-bottom: 0.4rem; }
+            .question { margin-left: 0; margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: 0.5px dotted #eee; }
+            .question:last-child { border-bottom: none; }
+
+            .radio-options-vertical label { margin-bottom: 2mm !important; font-size: 9pt; }
+            
+            /* Stil pentru opțiunea selectată - marcaj "X" */
+            label.selected-for-print::before {
+                content: "X  ";
+                font-weight: bold;
+                color: #000000; /* Culoare neagră pentru X */
+            }
+            /* Stil pentru punctaje - culoare roșie */
+            .score-for-print, 
+            .section-score.score-for-print, 
+            #totalScore.score-for-print {
+                color: red !important;
+                font-weight: bold;
+            }
+             #sectionScoresDisplay p .score-for-print { /* Specific pentru scorurile din sumarul de la final */
+                color: red !important;
+                font-weight: bold;
+            }
+
+
+            #results { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ccc; page-break-before: auto; }
+            #results h2 { font-size: 12pt; margin-bottom: 0.6rem; }
+            #sectionScoresDisplay p { font-size: 9pt; padding: 0.15rem 0; border: none; background: none; }
+            #results > div.text-center { font-size: 11pt; padding: 0.4rem; margin-bottom: 0.4rem; }
+            #feedbackMessage { font-size: 9pt; padding: 0.5rem; border: none; background: none !important; color: black !important; }
+            a { text-decoration: none; color: inherit; }
+            #page-footer-text { display: block !important; font-size: 7pt; margin-top:10mm; padding-top: 5mm; border-top: 0.5px solid #ccc;}
+        }
+
+        /* Restul stilurilor (Tailwind overrides, etc.) */
         input[type="radio"]:hover { border-color: #9ca3af; }
         input[type="radio"]:checked { border-color: #4f46e5; background-color: #4f46e5; }
         input[type="radio"]:checked::after { content: ''; display: block; width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
@@ -73,7 +132,7 @@
 </head>
 <body class="bg-gray-100 p-4 md:p-8">
     <div class="page-container">
-        <div> <img id="header-image-inline" src="header_color.jpg" alt="Antet">
+        <div id="page-content-for-print"> <img id="header-image-inline" src="header_color.jpg" alt="Antet">
             <div id="main-content">
                 <h1 id="page-title" class="text-xl md:text-2xl font-bold text-gray-800 mb-8 text-center">Evaluare a Competențelor de Design și Multimedia...</h1>
                 <div id="dataLoadingStatus">Se încarcă datele...</div>
@@ -114,8 +173,7 @@
                     <h2 class="text-lg font-semibold mb-2">Informații Evaluare</h2>
                     <p id="printParticipantName" class="text-sm"></p>
                     <p id="printGroup" class="text-sm"></p>
-                    <p id="printEvalDate" class="text-sm"></p>
-                    <p id="printTotalScore" class="text-sm font-medium"></p>
+                    <p id="printEvalDate" class="text-sm"></p> <p id="printTotalScore" class="text-sm font-medium"></p>
                 </div>
 
                 <form id="evaluationForm">
@@ -175,7 +233,7 @@
                                     </div>
                                 </fieldset>
                             </div>
-                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 1: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">15</span></div>
+                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 1: <span class="section-score">0</span> / <span class="section-max-score">15</span></div>
                         </div>
                         <div class="question-section" data-section-id="2" data-section-name="Layout și Structură Vizuală">
                             <h2 class="section-title">2. Layout și Structură Vizuală (Planificate)</h2>
@@ -198,7 +256,7 @@
                                     <div class="question" data-question-id="2.9"><p class="indicator-text"><span class="indicator-prefix">2.3.2.</span> Evidențierea vizuală (planificată) a elementelor cheie (butoane etc.).</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q2.9" value="3" data-points="3"> Exemplar (Elemente cheie foarte proeminente și ușor de identificat)</label><label><input type="radio" name="q2.9" value="2" data-points="2"> Competent (Elemente cheie vizibile, dar ar putea fi mai proeminente)</label><label><input type="radio" name="q2.9" value="1" data-points="1"> În Dezvoltare (Elemente cheie slab evidențiate)</label><label><input type="radio" name="q2.9" value="0" data-points="0"> Insuficient (Elementele cheie nu sunt evidențiate)</label></div></div>
                                 </fieldset>
                             </div>
-                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 2: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">24</span></div>
+                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 2: <span class="section-score">0</span> / <span class="section-max-score">24</span></div>
                         </div>
                         <div class="question-section" data-section-id="3" data-section-name="Culoare și Tipografie">
                             <h2 class="section-title">3. Culoare și Tipografie (Proiectate)</h2>
@@ -206,7 +264,7 @@
                                 <fieldset class="question-group"><legend class="criteria-title">3.1. Paleta Cromatică</legend><div class="question" data-question-id="3.1"><p class="indicator-text"><span class="indicator-prefix">3.1.1.</span> Paleta de culori propusă este armonioasă și limitată (max 3-4 culori princ.).</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q3.1" value="3" data-points="3"> Exemplar (Paletă coerentă, armonioasă, limitată și bine aleasă)</label><label><input type="radio" name="q3.1" value="2" data-points="2"> Competent (Paletă în general armonioasă, poate ușor extinsă)</label><label><input type="radio" name="q3.1" value="1" data-points="1"> În Dezvoltare (Prea multe culori sau culori nearmonioase)</label><label><input type="radio" name="q3.1" value="0" data-points="0"> Insuficient (Nicio paletă definită sau culori alese haotic)</label></div></div><div class="question" data-question-id="3.2"><p class="indicator-text"><span class="indicator-prefix">3.1.2.</span> Culorile alese sunt adecvate temei educaționale și publicului țintă.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q3.2" value="3" data-points="3"> Exemplar (Culori foarte potrivite contextului educațional)</label><label><input type="radio" name="q3.2" value="2" data-points="2"> Competent (Culori în general adecvate, mici nepotriviri)</label><label><input type="radio" name="q3.2" value="1" data-points="1"> În Dezvoltare (Culori parțial nepotrivite)</label><label><input type="radio" name="q3.2" value="0" data-points="0"> Insuficient (Culori total inadecvate contextului)</label></div></div><div class="question" data-question-id="3.3"><p class="indicator-text"><span class="indicator-prefix">3.1.3.</span> Contrastul de culoare planificat text-fundal este suficient (&gt;4.5:1).</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q3.3" value="3" data-points="3"> Exemplar (Contrast excelent în toate combinațiile propuse)</label><label><input type="radio" name="q3.3" value="2" data-points="2"> Competent (Contrast bun în majoritatea cazurilor, excepții minore)</label><label><input type="radio" name="q3.3" value="1" data-points="1"> În Dezvoltare (Contrast slab în unele exemple notabile)</label><label><input type="radio" name="q3.3" value="0" data-points="0"> Insuficient (Contrast insuficient în multiple exemple, text greu de citit)</label></div></div></fieldset>
                                 <fieldset class="question-group pt-4 border-t border-gray-200"><legend class="criteria-title">3.2. Selecția și Utilizarea Fonturilor</legend><div class="question" data-question-id="3.4"><p class="indicator-text"><span class="indicator-prefix">3.2.1.</span> Fonturile selectate (max 2-3 familii) sunt lizibile pe ecran.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q3.4" value="3" data-points="3"> Exemplar (Fonturi foarte lizibile, bine alese pentru digital)</label><label><input type="radio" name="q3.4" value="2" data-points="2"> Competent (Fonturi lizibile, dar poate nu optime)</label><label><input type="radio" name="q3.4" value="1" data-points="1"> În Dezvoltare (Unul dintre fonturi este greu lizibil)</label><label><input type="radio" name="q3.4" value="0" data-points="0"> Insuficient (Fonturi total nepotrivite/ilizibile)</label></div></div><div class="question" data-question-id="3.5"><p class="indicator-text"><span class="indicator-prefix">3.2.2.</span> Fonturile sunt utilizate consistent și ierarhic.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q3.5" value="3" data-points="3"> Exemplar (Utilizare foarte consistentă și ierarhică a fonturilor)</label><label><input type="radio" name="q3.5" value="2" data-points="2"> Competent (Utilizare în general consistentă, mici excepții)</label><label><input type="radio" name="q3.5" value="1" data-points="1"> În Dezvoltare (Utilizare inconsistentă sau ierarhie confuză)</label><label><input type="radio" name="q3.5" value="0" data-points="0"> Insuficient (Utilizare haotică a fonturilor)</label></div></div><div class="question" data-question-id="3.6"><p class="indicator-text"><span class="indicator-prefix">3.2.3.</span> Se evită fonturile excesiv de decorative în corpul textului.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q3.6" value="3" data-points="3"> Exemplar (Fonturi decorative folosite minim și adecvat, text lizibil)</label><label><input type="radio" name="q3.6" value="2" data-points="2"> Competent (Fonturi decorative folosite limitat, lizibilitate OK)</label><label><input type="radio" name="q3.6" value="1" data-points="1"> În Dezvoltare (Fonturi decorative folosite în exces, afectează lizibilitatea)</label><label><input type="radio" name="q3.6" value="0" data-points="0"> Insuficient (Corpul textului scris cu font decorativ, ilizibil)</label></div></div></fieldset>
                             </div>
-                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 3: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">18</span></div>
+                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 3: <span class="section-score">0</span> / <span class="section-max-score">18</span></div>
                         </div>
                         <div class="question-section" data-section-id="4" data-section-name="Planificare Selecție și Integrare Multimedia">
                              <h2 class="section-title">4. Planificare Selecție și Integrare Multimedia</h2>
@@ -215,7 +273,7 @@
                                  <fieldset class="question-group pt-4 border-t border-gray-200"><legend class="criteria-title">4.2. Calitatea Tehnică și Optimizarea Media (Planificate)</legend><div class="question" data-question-id="4.3"><p class="indicator-text"><span class="indicator-prefix">4.2.1.</span> Există dovezi ale preocupării pentru calitatea tehnică a media.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q4.3" value="3" data-points="3"> Exemplar (Preocupare explicită și specifică pentru calitate)</label><label><input type="radio" name="q4.3" value="2" data-points="2"> Competent (Menționare generală a nevoii de calitate)</label><label><input type="radio" name="q4.3" value="1" data-points="1"> În Dezvoltare (Nicio mențiune despre calitatea tehnică)</label><label><input type="radio" name="q4.3" value="0" data-points="0"> Insuficient (Se propun explicit media de calitate slabă)</label></div></div><div class="question" data-question-id="4.4"><p class="indicator-text"><span class="indicator-prefix">4.2.2.</span> Este menționată intenția de a optimiza media pentru web/mobil.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q4.4" value="3" data-points="3"> Exemplar (Intenție clară și specifică de optimizare)</label><label><input type="radio" name="q4.4" value="2" data-points="2"> Competent (Menționare generală a nevoii de optimizare)</label><label><input type="radio" name="q4.4" value="1" data-points="1"> În Dezvoltare (Nu se abordează problema optimizării)</label><label><input type="radio" name="q4.4" value="0" data-points="0"> Insuficient (Planul sugerează utilizarea de fișiere neoptimizate)</label></div></div></fieldset>
                                  <fieldset class="question-group pt-4 border-t border-gray-200"><legend class="criteria-title">4.3. Integrarea Vizuală a Media (Planificată)</legend><div class="question" data-question-id="4.5"><p class="indicator-text"><span class="indicator-prefix">4.3.1.</span> Plasarea planificată a media în layout este logică și estetică.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q4.5" value="3" data-points="3"> Exemplar (Integrare elegantă, logică și estetică)</label><label><input type="radio" name="q4.5" value="2" data-points="2"> Competent (Integrare logică, dar aspectul estetic poate fi îmbunătățit)</label><label><input type="radio" name="q4.5" value="1" data-points="1"> În Dezvoltare (Media pare plasată la întâmplare, întrerupe fluxul)</label><label><input type="radio" name="q4.5" value="0" data-points="0"> Insuficient (Niciun plan clar de integrare vizuală)</label></div></div><div class="question" data-question-id="4.6"><p class="indicator-text"><span class="indicator-prefix">4.3.2.</span> Media completează conținutul, fără a crea aglomerare vizuală.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q4.6" value="3" data-points="3"> Exemplar (Media bine dimensionată, completează fără a aglomera)</label><label><input type="radio" name="q4.6" value="2" data-points="2"> Competent (Media în general bine integrată, poate ușor aglomerat)</label><label><input type="radio" name="q4.6" value="1" data-points="1"> În Dezvoltare (Pagină supraîncărcată cu media)</label><label><input type="radio" name="q4.6" value="0" data-points="0"> Insuficient (Integrarea media creează dezordine vizuală)</label></div></div></fieldset>
                              </div>
-                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 4: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">18</span></div>
+                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 4: <span class="section-score">0</span> / <span class="section-max-score">18</span></div>
                         </div>
                         <div class="question-section" data-section-id="5" data-section-name="Design Interfață, Interactivitate & Accesibilitate">
                             <h2 class="section-title">5. Design Interfață, Interactivitate & Accesibilitate</h2>
@@ -224,26 +282,26 @@
                                 <fieldset class="question-group pt-4 border-t border-gray-200"><legend class="criteria-title">5.2. Planificarea Feedback-ului Vizual</legend><div class="question" data-question-id="5.5"><p class="indicator-text"><span class="indicator-prefix">5.2.1.</span> Portofoliul indică intenția de a oferi feedback vizual la interacțiuni.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q5.5" value="3" data-points="3"> Exemplar (Intenție clară și specifică de feedback vizual)</label><label><input type="radio" name="q5.5" value="2" data-points="2"> Competent (Intenție menționată general)</label><label><input type="radio" name="q5.5" value="1" data-points="1"> În Dezvoltare (Nicio mențiune despre feedback vizual)</label><label><input type="radio" name="q5.5" value="0" data-points="0"> Insuficient (Designul exclude posibilitatea feedback-ului)</label></div></div></fieldset>
                                 <fieldset class="question-group pt-4 border-t border-gray-200"><legend class="criteria-title">5.3. Conștientizarea Accesibilității Vizuale</legend><div class="question" data-question-id="5.6"><p class="indicator-text"><span class="indicator-prefix">5.3.1.</span> Preocuparea pentru contrastul culorilor este evidentă în design.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q5.6" value="3" data-points="3"> Exemplar (Contrast excelent, verificabil, preocupare evidentă)</label><label><input type="radio" name="q5.6" value="2" data-points="2"> Competent (Contrast bun în general, mici probleme potențiale)</label><label><input type="radio" name="q5.6" value="1" data-points="1"> În Dezvoltare (Contrast slab în unele zone, nemenționat)</label><label><input type="radio" name="q5.6" value="0" data-points="0"> Insuficient (Contrast evident insuficient, text ilizibil)</label></div></div><div class="question" data-question-id="5.8"><p class="indicator-text"><span class="indicator-prefix">5.3.2.</span> Structura vizuală planificată (ex: heading-uri) susține accesibilitatea.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q5.8" value="3" data-points="3"> Exemplar (Structură H1-H6 corectă și logică în mockup)</label><label><input type="radio" name="q5.8" value="2" data-points="2"> Competent (Structură în general corectă, mici erori)</label><label><input type="radio" name="q5.8" value="1" data-points="1"> În Dezvoltare (Structura titlurilor inconsistentă/incorectă)</label><label><input type="radio" name="q5.8" value="0" data-points="0"> Insuficient (Lipsa structurii cu heading-uri)</label></div></div></fieldset>
                             </div>
-                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 5: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">21</span></div>
+                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 5: <span class="section-score">0</span> / <span class="section-max-score">21</span></div>
                         </div>
                         <div class="question-section" data-section-id="6" data-section-name="Gestionarea Licențelor Media">
                              <h2 class="section-title">6. Gestionarea Licențelor Media (Planificată)</h2>
                              <div class="space-y-6">
                                  <fieldset class="question-group"><legend class="criteria-title">6.1. Gestionarea Licențelor Media (Planificată)</legend><div class="question" data-question-id="6.1"><p class="indicator-text"><span class="indicator-prefix">6.1.1.</span> Demonstrarea înțelegerii nevoii de a folosi media cu licențe corecte (ex: CC, Domeniu Public).</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q6.1" value="2" data-points="2"> Exemplar/Competent (Înțelegere clară/Conștientizare a nevoii)</label><label><input type="radio" name="q6.1" value="1" data-points="1"> În Dezvoltare (Menționare superficială)</label><label><input type="radio" name="q6.1" value="0" data-points="0"> Insuficient (Se propune media protejată/Lipsă)</label></div></div><div class="question" data-question-id="6.2"><p class="indicator-text"><span class="indicator-prefix">6.1.2.</span> Includerea unui plan (chiar sumar) pentru atribuirea surselor media.</p><div class="radio-options-vertical pl-4"><label><input type="radio" name="q6.2" value="2" data-points="2"> Exemplar/Competent (Plan clar/sumar pentru atribuire)</label><label><input type="radio" name="q6.2" value="1" data-points="1"> În Dezvoltare (Nicio mențiune despre cum/unde)</label><label><input type="radio" name="q6.2" value="0" data-points="0"> Insuficient (Planul exclude atribuirea/Lipsă)</label></div></div></fieldset>
                              </div>
-                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 6: <span class="section-score text-indigo-600">0</span> / <span class="section-max-score">4</span></div>
+                            <div class="mt-6 text-right font-semibold text-gray-700">Scor Secțiunea 6: <span class="section-score">0</span> / <span class="section-max-score">4</span></div>
                         </div>
                     </div>                    
                     <div id="action-buttons" class="mt-10 pt-6 border-t border-gray-300 flex flex-col sm:flex-row justify-center items-center gap-4">
                         <button type="button" id="resetBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 text-lg w-full sm:w-auto">Resetare Formular</button>
                         <button type="button" id="calculateScoreBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-lg w-full sm:w-auto">Calculează Scorul & Afișează Feedback</button>
-                        <button type="button" id="printPdfBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-lg w-full sm:w-auto">Generează PDF Tabelar</button>
+                        <button type="button" id="printPdfBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-lg w-full sm:w-auto">Printează / Salvează PDF (Browser)</button>
                     </div>
                 </form>
                 <div id="results" class="mt-10 pt-8 border-t-2 border-gray-300 hidden">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Rezultate Evaluare</h2>
                     <div id="sectionScoresDisplay" class="mb-6 space-y-3"></div>
-                    <div class="text-center text-2xl font-bold text-gray-800 mb-6 bg-indigo-50 p-4 rounded-lg">Scor Total General: <span id="totalScore" class="text-indigo-700">0</span> / <span id="maxTotalScore">100</span></div>
+                    <div class="text-center text-2xl font-bold text-gray-800 mb-6 bg-indigo-50 p-4 rounded-lg">Scor Total General: <span id="totalScore" >0</span> / <span id="maxTotalScore">100</span></div>
                     <div id="feedbackMessage" class="text-left font-medium hidden"></div>
                 </div>
             </div>
@@ -423,6 +481,10 @@
         const participantEmailDisplay = document.getElementById('participantEmailDisplay');
         if (participantEmailDisplay) participantEmailDisplay.textContent = '...';
 
+        // Elimină clasele adăugate pentru printare
+        document.querySelectorAll('.selected-for-print').forEach(el => el.classList.remove('selected-for-print'));
+        document.querySelectorAll('.score-for-print').forEach(el => el.classList.remove('score-for-print'));
+
         alert("Formularul a fost resetat.");
     }
 
@@ -493,9 +555,6 @@
                 overallMaxScore = calculateAndUpdateOverallMaxScore(); 
 
                 if (Object.keys(questionnaireVars).length === 0) {
-                    questionnaireVars.participantName = ""; // Inițializare pentru a stoca datele din dropdown
-                    questionnaireVars.groupName = "";
-
                     document.querySelectorAll('.question-section').forEach(section => {
                         const sectionId = section.dataset.sectionId;
                         questionnaireVars[sectionId] = { 
@@ -529,10 +588,8 @@
                     });
                 }
                 
-                // Stochează numele și grupa selectate
                 questionnaireVars.participantName = participantSelect.options[participantSelect.selectedIndex]?.dataset.name || 'N/A';
                 questionnaireVars.groupName = groupSelect.value || 'N/A Grupă';
-
 
                 document.querySelectorAll('.question-section').forEach(section => {
                     const sectionId = section.dataset.sectionId;
@@ -554,7 +611,7 @@
                             if (isNaN(score)) score = 0;
                             if (isNaN(selectedValue)) selectedValue = -1;
                         } else {
-                            // allQuestionsAnswered = false; // Comentat pentru a permite generarea PDF chiar dacă nu e tot completat
+                            // allQuestionsAnswered = false; 
                         }
                         currentSectionScore += score;
                         if (questionnaireVars[sectionId] && questionnaireVars[sectionId].questions[questionId]) {
@@ -566,16 +623,24 @@
 
                     const sectionScoreSpan = section.querySelector('.section-score');
                     if (sectionScoreSpan) sectionScoreSpan.textContent = currentSectionScore;
+                    // Adaugă clasa pentru stilizare roșie la scorul secțiunii afișat în HTML
+                    if (sectionScoreSpan) sectionScoreSpan.classList.add('score-for-print');
+
+
                     overallScore += currentSectionScore;
                     sectionScoresData[sectionId] = { name: sectionName, score: currentSectionScore, maxScore: sectionMaxScore };
 
                     const scoreLine = document.createElement('p');
                     scoreLine.classList.add('text-md', 'text-gray-700', 'flex', 'justify-between', 'items-center');
-                    scoreLine.innerHTML = `<span class="font-medium">${sectionId}. ${sectionName}:</span><span class="font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">${currentSectionScore} / ${sectionMaxScore}</span>`;
+                    scoreLine.innerHTML = `<span class="font-medium">${sectionId}. ${sectionName}:</span><span class="font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded score-for-print">${currentSectionScore} / ${sectionMaxScore}</span>`;
                     sectionScoresDisplayDiv.appendChild(scoreLine);
                 });
 
                 totalScoreSpan.textContent = overallScore;
+                 // Adaugă clasa pentru stilizare roșie la scorul total afișat în HTML
+                totalScoreSpan.classList.add('score-for-print');
+
+
                 let feedbackText = '';
                 let feedbackClass = '';
                 const percentageScore = overallMaxScore > 0 ? (overallScore / overallMaxScore) * 100 : 0;
@@ -615,247 +680,61 @@
         }
         if (resetBtn) { resetBtn.addEventListener('click', resetForm); }
 
-        // --- NOUA FUNCȚIE PENTRU GENERARE PDF TABELAR ---
+        // --- Funcționalitate actualizată pentru Print/Salvare PDF (Browser) ---
         if (printPdfBtn) {
             printPdfBtn.addEventListener('click', () => {
-                if (!last_calculated_scores || Object.keys(questionnaireVars).length === 0) {
-                    alert("Vă rugăm să calculați scorul înainte de a genera PDF-ul. Datele formularului sunt necesare.");
+                if (!last_calculated_scores) {
+                    alert("Vă rugăm calculați scorul înainte de a printa/salva ca PDF.");
                     return;
                 }
-
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    orientation: 'p',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-
-                // Setează fontul de bază pentru document
-                doc.setFont('Helvetica', 'normal'); // Folosim Helvetica
-
-                const selectedParticipantName = questionnaireVars.participantName || 'N/A Cursant';
-                const selectedGroup = questionnaireVars.groupName || 'N/A Grupă';
                 
+                const selectedParticipantName = questionnaireVars.participantName || 
+                                              (participantSelect.options[participantSelect.selectedIndex]?.dataset.name || 'N/A Cursant');
+                const selectedGroup = questionnaireVars.groupName || 
+                                      (groupSelect.value || 'N/A Grupă');
+
+                if (selectedParticipantName === 'N/A Cursant' || selectedGroup === 'N/A Grupă') {
+                     alert("Vă rugăm selectați un cursant și o grupă înainte de a printa/salva ca PDF.");
+                     return;
+                }
+
+                // Salvează titlul original și setează cel nou pentru PDF
+                const originalTitle = document.title;
                 const sanitizeFileNamePart = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_.-]/g, '');
-                const fileName = `${sanitizeFileNamePart(selectedGroup)}_${sanitizeFileNamePart(selectedParticipantName)}_Evaluare.pdf`;
+                document.title = `${sanitizeFileNamePart(selectedGroup)}_${sanitizeFileNamePart(selectedParticipantName)}_Evaluare`;
 
-                const pageHeight = doc.internal.pageSize.getHeight();
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const leftMargin = 10;
-                const rightMargin = 10;
-                const topMargin = 10;
-                const bottomMargin = 10; // Mărit pentru subsol
-                const usableWidth = pageWidth - leftMargin - rightMargin;
-                let currentY = topMargin;
-                
-                const baseFontSize = 10; // Mărime de bază pentru textul normal
-                const titleFontSize = 12;
-                const sectionTitleFontSize = 11;
-                const smallFontSize = 8;
-                const defaultLineHeight = 6; // Spațiere între linii (mm)
-                const questionSpacing = 4; // Spațiu după un bloc de întrebare/opțiuni
-                const optionIndent = 5; // Indentare pentru opțiuni
-                const pointsColumnWidth = 20;
-                const questionTextWidth = usableWidth - pointsColumnWidth - optionIndent; // Lățime pentru text întrebare/opțiuni
-
-                let currentPageNum = 1;
-
-                function addPageWithHeadersFooters() {
-                    doc.addPage();
-                    currentPageNum++;
-                    currentY = topMargin;
-                    addPdfHeader();
-                }
-
-                function checkAndAddPage(neededHeight) {
-                    if (currentY + neededHeight > pageHeight - bottomMargin - 5) { // -5 pentru a lăsa loc și pentru subsol
-                        addPageWithHeadersFooters();
-                        return true; // Pagina nouă a fost adăugată
+                // Adaugă clase pentru stilurile de printare
+                document.querySelectorAll('.section-score, #totalScore').forEach(el => el.classList.add('score-for-print'));
+                document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    const label = radio.parentElement;
+                    if (radio.checked) {
+                        label.classList.add('selected-for-print');
+                    } else {
+                        label.classList.remove('selected-for-print');
                     }
-                    return false;
-                }
-                
-                function addPdfHeader() {
-                    doc.setFont('Helvetica', 'bold');
-                    doc.setFontSize(smallFontSize + 2);
-                    doc.setTextColor(80, 80, 80);
-                    doc.text("Raport Evaluare Competențe Multimedia", pageWidth / 2, topMargin - 2, { align: 'center' });
-                    currentY = topMargin; // Reset currentY for content after header
-                }
-
-                function addPdfFooterToAllPages() {
-                    const totalPages = doc.internal.getNumberOfPages();
-                    for (let i = 1; i <= totalPages; i++) {
-                        doc.setPage(i);
-                        doc.setFont('Helvetica', 'normal');
-                        doc.setFontSize(smallFontSize);
-                        doc.setTextColor(128, 128, 128);
-                        const footerTextContent = document.getElementById('page-footer-text').textContent.trim().replace(/\s\s+/g, ' ');
-                        const footerLines = doc.splitTextToSize(footerTextContent, usableWidth - 10); // -10 for a bit of padding
-                        doc.text(footerLines, pageWidth / 2, pageHeight - bottomMargin + 6, { align: 'center'});
-                        doc.text(`Pagina ${i} / ${totalPages}`, pageWidth - leftMargin - 10, pageHeight - bottomMargin + 8, { align: 'right' });
-                    }
-                }
-                
-                function addWrappedText(text, x, y, maxWidth, options = {}, lineHeightFactor = 1.3) {
-                    const currentFontSize = doc.getFontSize();
-                    const lines = doc.splitTextToSize(text, maxWidth);
-                    const lineHeight = currentFontSize * 0.352778 * lineHeightFactor;
-                    
-                    let tempY = y;
-                    lines.forEach((line, index) => {
-                        if (tempY + lineHeight > pageHeight - bottomMargin -5 ) { // Verifică înainte de a desena fiecare linie
-                            addPageWithHeadersFooters();
-                            tempY = currentY; // currentY a fost resetat
-                        }
-                        doc.text(line, x, tempY, options);
-                        tempY += lineHeight;
-                    });
-                    currentY = tempY; // Actualizează global
-                }
-                
-                addPdfHeader();
-
-                // Informații evaluare
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(titleFontSize);
-                addWrappedText("Informații Evaluare", leftMargin, currentY, usableWidth);
-                currentY += defaultLineHeight * 0.5;
-
-                doc.setFont('Helvetica', 'normal');
-                doc.setFontSize(baseFontSize);
-                addWrappedText(`Cursant: ${selectedParticipantName}`, leftMargin, currentY, usableWidth);
-                addWrappedText(`Grupa: ${selectedGroup}`, leftMargin, currentY, usableWidth);
-                // Data evaluării a fost eliminată
-                doc.setFont('Helvetica', 'bold');
-                addWrappedText(`Punctaj total:`, leftMargin, currentY, usableWidth - pointsColumnWidth);
-                doc.setTextColor(255, 0, 0); // Roșu pentru punctaj
-                doc.text(`${last_calculated_scores.total} / ${last_calculated_scores.max_total}`, leftMargin + usableWidth - pointsColumnWidth, currentY, {align: 'right'});
-                doc.setTextColor(0, 0, 0); // Reset la negru
-                currentY += defaultLineHeight * 1.5;
-
-                doc.setDrawColor(200, 200, 200);
-                doc.line(leftMargin, currentY, pageWidth - rightMargin, currentY); // Separator
-                currentY += defaultLineHeight / 2;
-
-                // --- Generare Tabel pentru Întrebări ---
-                Object.keys(questionnaireVars).forEach((sectionId) => {
-                    if (typeof questionnaireVars[sectionId] !== 'object' || !questionnaireVars[sectionId].name) return; // Skip non-section data
-
-                    const section = questionnaireVars[sectionId];
-                    checkAndAddPage(defaultLineHeight * 2); // Spațiu pentru titlul secțiunii
-
-                    doc.setFont('Helvetica', 'bold');
-                    doc.setFontSize(sectionTitleFontSize);
-                    addWrappedText(`${sectionId}. ${section.name}`, leftMargin, currentY, usableWidth);
-                    currentY += defaultLineHeight * 0.75;
-                    
-                    Object.keys(section.questions).forEach(questionId => {
-                        const questionData = section.questions[questionId];
-                        
-                        let questionBlockHeightEstimate = 0;
-                        let lines = doc.splitTextToSize(questionData.label, questionTextWidth);
-                        questionBlockHeightEstimate += lines.length * (baseFontSize * 0.352778 * 1.3);
-                        questionData.optionsData.forEach(opt => {
-                            lines = doc.splitTextToSize(opt.text, questionTextWidth - optionIndent);
-                            questionBlockHeightEstimate += lines.length * ((baseFontSize - 1) * 0.352778 * 1.3);
-                        });
-                        questionBlockHeightEstimate += questionSpacing;
-                        checkAndAddPage(questionBlockHeightEstimate);
-
-                        let startYForQuestionBlock = currentY;
-
-                        doc.setFont('Helvetica', 'bold');
-                        doc.setFontSize(baseFontSize);
-                        addWrappedText(questionId + ". " + questionData.label, leftMargin, currentY, questionTextWidth);
-                        
-                        let tempYAfterQuestionText = currentY; // Salvează Y după textul întrebării
-
-                        doc.setFont('Helvetica', 'normal');
-                        doc.setFontSize(baseFontSize - 1);
-                        questionData.optionsData.forEach(opt => {
-                            checkAndAddPage(defaultLineHeight); // Verifică pentru fiecare opțiune
-                            let prefix = opt.value === questionData.var.value ? "X  " : "    "; // Marchează cu X sau lasă spațiu
-                            doc.setTextColor(opt.value === questionData.var.value ? '#000000' : '#555555'); // Stilizează puțin textul opțiunii
-                            addWrappedText(prefix + opt.text, leftMargin + optionIndent, currentY, questionTextWidth - optionIndent);
-                        });
-                        doc.setTextColor(0,0,0);
-
-                        // Afișează punctajul întrebării pe același rând (aproximativ) cu începutul textului întrebării
-                        doc.setFont('Helvetica', 'bold');
-                        doc.setFontSize(baseFontSize);
-                        doc.setTextColor(255, 0, 0); // Roșu
-                        doc.text(`${questionData.var.points}p`, leftMargin + questionTextWidth + optionIndent, startYForQuestionBlock);
-                        doc.setTextColor(0, 0, 0); // Reset
-
-                        currentY += questionSpacing / 2;
-                        doc.setDrawColor(220, 220, 220);
-                        doc.line(leftMargin, currentY, pageWidth - rightMargin, currentY); // Linie fină după fiecare întrebare
-                        currentY += questionSpacing / 2;
-                    });
-
-                    // Scor secțiune
-                    checkAndAddPage(defaultLineHeight * 2);
-                    doc.setFont('Helvetica', 'bold');
-                    doc.setFontSize(baseFontSize + 1);
-                    const sectionScoreInfo = last_calculated_scores.sections[sectionId];
-                    addWrappedText(`Scor Secțiunea ${sectionId} (${section.name}):`, leftMargin, currentY, usableWidth - pointsColumnWidth);
-                    doc.setTextColor(255,0,0);
-                    doc.text(`${sectionScoreInfo.score} / ${sectionScoreInfo.maxScore}`, leftMargin + usableWidth - pointsColumnWidth, currentY, {align: 'right'});
-                    doc.setTextColor(0,0,0);
-                    currentY += defaultLineHeight * 1.5;
                 });
+                // Populează caseta de sumar (va fi afișată de CSS-ul @media print)
+                 const printSummaryBox = document.getElementById('print-summary-box');
+                 if (printSummaryBox) {
+                     document.getElementById('printParticipantName').textContent = "Cursant: " + selectedParticipantName;
+                     document.getElementById('printGroup').textContent = "Grupa: " + selectedGroup;
+                     // Data evaluării este ascunsă prin CSS la print, dar o populăm aici dacă alte părți din sumar se bazează pe ea
+                     document.getElementById('printEvalDate').textContent = "Data evaluării: " + (new Date()).toLocaleDateString('ro-RO'); 
+                     const totalScoreEl = document.getElementById('printTotalScore');
+                     totalScoreEl.textContent = "Punctaj total: " + last_calculated_scores.total + " / " + last_calculated_scores.max_total;
+                     totalScoreEl.classList.add('score-for-print'); // Aplică stilul roșu și aici
+                 }
 
-                // --- Sumar Scoruri Finale și Feedback ---
-                checkAndAddPage(0, true); // Încearcă să pui sumarul pe pagină nouă dacă e mult conținut înainte
-                doc.setDrawColor(150,150,150);
-                doc.line(leftMargin, currentY, pageWidth - rightMargin, currentY); currentY += defaultLineHeight *0.5;
 
+                window.print(); // Deschide dialogul de printare al browserului
 
-                doc.setFontSize(titleFontSize);
-                doc.setFont('Helvetica', 'bold');
-                addWrappedText("Rezultate Finale Evaluare", leftMargin, currentY, usableWidth);
-                currentY += defaultLineHeight;
-
-                doc.setFontSize(baseFontSize + 1);
-                doc.setFont('Helvetica', 'normal');
-                 for (const sectionId_summary in last_calculated_scores.sections) {
-                    if (questionnaireVars[sectionId_summary] && questionnaireVars[sectionId_summary].name) { 
-                        const sec = last_calculated_scores.sections[sectionId_summary];
-                        checkAndAddPage(defaultLineHeight);
-                        addWrappedText(`${sectionId_summary}. ${questionnaireVars[sectionId_summary].name}:`, leftMargin, currentY, usableWidth - (pointsColumnWidth + 5) );
-                        doc.setTextColor(255,0,0);
-                        doc.setFont(undefined, 'bold');
-                        doc.text(`${sec.score} / ${sec.maxScore}`, leftMargin + usableWidth - pointsColumnWidth, currentY, {align: 'right'});
-                        doc.setTextColor(0,0,0);
-                        doc.setFont(undefined, 'normal');
-                    }
-                }
-                currentY += defaultLineHeight * 0.5;
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(baseFontSize + 2);
-                checkAndAddPage(defaultLineHeight);
-                addWrappedText(`Scor Total General:`, leftMargin, currentY, usableWidth - (pointsColumnWidth + 5));
-                doc.setTextColor(255,0,0);
-                doc.text(`${last_calculated_scores.total} / ${last_calculated_scores.max_total}`, leftMargin + usableWidth - pointsColumnWidth, currentY, {align: 'right'});
-                doc.setTextColor(0,0,0);
-                currentY += defaultLineHeight * 2;
-
-                const feedbackDiv = document.createElement('div');
-                feedbackDiv.innerHTML = last_calculated_scores.feedback;
-                const feedbackTextForPdf = feedbackDiv.innerText || feedbackDiv.textContent || "";
-                
-                doc.setFont('Helvetica', 'bold');
-                doc.setFontSize(baseFontSize+1);
-                addWrappedText("Feedback General:", leftMargin, currentY, usableWidth);
-                doc.setFont('Helvetica', 'normal');
-                doc.setFontSize(baseFontSize);
-                checkAndAddPage(40); 
-                addWrappedText(feedbackTextForPdf, leftMargin, currentY, usableWidth);
-                
-                addPdfFooterToAllPages();
-
-                doc.save(fileName);
+                // Delay scurt pentru a permite dialogului de printare să se inițieze
+                setTimeout(() => {
+                    document.title = originalTitle; // Restaurează titlul original
+                    // Elimină clasele de printare după ce dialogul s-a închis (aproximativ)
+                    document.querySelectorAll('.selected-for-print').forEach(el => el.classList.remove('selected-for-print'));
+                    // Nu eliminăm .score-for-print de pe elementele din HTML, ci le controlăm via CSS de printare
+                }, 1000);
             });
         }
         calculateAndUpdateOverallMaxScore();
