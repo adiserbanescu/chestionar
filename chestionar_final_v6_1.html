@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluare Competente Design Multimedia</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <style>
         /* Stiluri generale */
         body {
@@ -15,10 +17,9 @@
         }
         .page-container {
             background-color: white;
-            width: 210mm;
-            min-height: 297mm;
+            width: 210mm; /* Lățime A4 */
             margin: 1rem auto;
-            padding: 15mm 18mm 15mm 18mm;
+            padding: 15mm 18mm 15mm 18mm; /* Margini A4 standard */
             box-shadow: 0 2px 15px rgba(0,0,0,0.15);
             box-sizing: border-box;
             position: relative;
@@ -29,10 +30,10 @@
              margin-left: auto; margin-right: auto;
              margin-bottom: 10mm;
         }
-        #page-footer-text { /* Stil pentru textul de subsol PNRR */
+        #page-footer-text {
             margin-top: 15mm;
             text-align: center;
-            font-size: 0.7rem; /* Ajustat pentru a fi mai mic */
+            font-size: 0.7rem;
             color: #6b7280;
             border-top: 0.5px solid #ccc;
             padding-top: 5mm;
@@ -40,7 +41,7 @@
 
         /* Stiluri pentru caseta de sumar (ascunsă pe ecran) */
         #print-summary-box {
-            /* Ascuns pe ecran implicit cu clasa 'hidden' */
+            /* display: none;  Este ascunsă cu clasa 'hidden' inițial */
             border: 1px solid #ccc;
             padding: 10px;
             margin-bottom: 15px;
@@ -51,40 +52,62 @@
          #print-summary-box p { margin-bottom: 4px; }
 
 
-        /* Stiluri specifice pentru printare */
-        @media print {
-            body { background-color: white; padding: 0; margin: 0; font-size: 9pt; }
-            .page-container { width: 100%; min-height: 0; height: auto; margin: 0; box-shadow: none; padding: 0; border: none; }
-            #main-content { padding: 15mm 15mm 15mm 15mm; } /* Margini egale la print */
-            /* Ascundem elementele non-print */
-            #participant-section, #action-buttons, #dataLoadingStatus, h1#page-title { display: none !important; }
-            /* Afișăm antetul și caseta de sumar la print */
-            #header-image-inline { display: block !important; margin-bottom: 8mm !important; }
-            #print-summary-box { display: block !important; page-break-after: avoid !important; } /* Afișăm caseta la print */
-            #page-footer-text { display: block !important; } /* Afișăm subsolul text la print */
-
-            .question-section { page-break-inside: avoid !important; box-shadow: none; border: none; margin-bottom: 0.5rem; padding: 0.5rem 0; }
-            h2.section-title { margin-bottom: 0.5rem; padding-bottom: 0.2rem; font-size: 10pt; border-bottom: 1px solid #ccc; }
-            .criteria-title { font-size: 9pt; margin-bottom: 0.4rem; }
-            .question { margin-left: 0; margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: none; } /* Fără linie */
-            /* Ajustare layout radio pentru print */
-            .radio-options-vertical { display: flex; flex-direction: column; }
-            .radio-options-vertical label { margin-bottom: 1mm !important; } /* Spațiere redusă între radio */
-            label { font-size: 8pt; line-height: 1.2; }
-            input[type="radio"] { width: 0.8rem; height: 0.8rem; top: 0.1rem; border-width: 1px; }
-            input[type="radio"]:checked::after { width: 0.35rem; height: 0.35rem; }
-            #results { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ccc; page-break-before: auto; }
-            #results h2 { font-size: 11pt; margin-bottom: 0.4rem; }
-            #sectionScoresDisplay p { font-size: 8.5pt; padding: 0.15rem 0; border: none; background: none; }
-            #results > div.text-center { font-size: 10pt; padding: 0.4rem; margin-bottom: 0.4rem; }
-            #feedbackMessage { font-size: 9pt; padding: 0.5rem; border: none; background: none !important; color: black !important; }
-            a { text-decoration: none; color: inherit; }
+        /* Stiluri specifice pentru generare PDF (aplicate și pe screen pentru consistența html2pdf) */
+        @media print, screen {
+            /* Ascundem elementele irelevante în PDF */
+            .pdf-hide {
+                 display: none !important;
+            }
+            /* Stiluri aplicate containerului în timpul generării PDF */
+            .page-container.pdf-generating {
+                 width: 190mm !important; /* 210mm - 2*10mm margini (aprox) */
+                 padding: 5mm !important;
+                 margin: 0 auto !important;
+                 box-shadow: none !important;
+                 border: none !important;
+            }
+             .pdf-generating .question-section {
+                 padding: 3mm !important;
+                 margin-bottom: 3mm !important;
+             }
+            .pdf-generating .section-title,
+            .pdf-generating .criteria-title,
+            .pdf-generating .indicator-text,
+            .pdf-generating label {
+                font-size: 9pt !important;
+                line-height: 1.2 !important;
+            }
+             .pdf-generating #results, .pdf-generating #feedbackMessage {
+                 font-size: 9pt !important;
+                 padding: 2mm !important;
+             }
+             /* Stiluri specifice pentru caseta de sumar când e vizibilă pentru PDF */
+             #print-summary-box.pdf-visible { /* Clasă adăugată de JS */
+                 display: block !important;
+                 border: 1px solid #000 !important;
+                 padding: 10px !important;
+                 margin-bottom: 20px !important;
+                 background: #f9f9f9 !important;
+                 font-size: 10pt !important;
+                 page-break-inside: avoid !important;
+             }
+             #print-summary-box.pdf-visible h2 {
+                 margin-bottom: 8px !important;
+                 font-size: 11pt !important;
+                 font-weight: bold !important;
+             }
+             #print-summary-box.pdf-visible p {
+                 margin-bottom: 4px !important;
+             }
         }
 
+
         /* Restul stilurilor */
+        input[type="radio"] { appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 1.1rem; height: 1.1rem; border: 2px solid #cbd5e1; border-radius: 50%; outline: none; cursor: pointer; margin-right: 0.5rem; position: relative; top: 0.2rem; transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out; flex-shrink: 0; }
         input[type="radio"]:hover { border-color: #9ca3af; }
         input[type="radio"]:checked { border-color: #4f46e5; background-color: #4f46e5; }
         input[type="radio"]:checked::after { content: ''; display: block; width: 0.5rem; height: 0.5rem; background-color: white; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        label { cursor: pointer; display: flex; align-items: center; margin-bottom: 0.25rem; line-height: 1.4; font-size: 0.85rem; color: #374151; }
         select { padding: 0.4rem 2.5rem 0.4rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; width: 100%; box-sizing: border-box; font-size: 0.875rem; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 1.5em 1.5em; transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
         select:disabled { background-color: #f3f4f6; cursor: not-allowed; opacity: 0.7; }
         select:focus { outline: 2px solid transparent; outline-offset: 2px; border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5); }
@@ -118,6 +141,15 @@
 
     <div id="page-content" class="page-container">
         <img id="header-image-inline" src="header_color.jpg" alt="Antet">
+
+        <div id="print-summary-box" class="hidden">
+            <h2 class="text-lg font-semibold mb-2">Informații Evaluare</h2>
+            <p id="printParticipantName"></p>
+            <p id="printGroup"></p>
+            <p id="printEvalDate"></p>
+            <p id="printTotalScore"></p>
+            <hr class="mt-4 mb-2 border-gray-300">
+        </div>
 
         <div id="main-content">
             <h1 id="page-title" class="text-xl md:text-2xl font-bold text-gray-800 mb-8 text-center">Evaluare a Competențelor de Design și Multimedia în contextul portofoliilor premergătoare Resurselor Educaționale Deschise</h1>
@@ -156,14 +188,6 @@
                          <span id="participantEmailDisplay" class="data-display">...</span>
                     </div>
                  </div>
-            </div>
-
-            <div id="print-summary-box" class="hidden"> <h2 class="text-lg font-semibold mb-2">Informații Evaluare</h2>
-                <p id="printParticipantName" class="text-sm"></p>
-                <p id="printGroup" class="text-sm"></p>
-                <p id="printEvalDate" class="text-sm"></p>
-                <p id="printTotalScore" class="text-sm font-medium"></p>
-                <hr class="mt-4 mb-2 border-gray-300">
             </div>
 
 
